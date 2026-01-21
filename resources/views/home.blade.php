@@ -27,7 +27,7 @@
                     </h1>
                     <p class="hero-description">
                         Taste the excellence of traditional recipes blended with modern culinary arts. 
-                        Your destination for premium dining and delivery in the heart of Alaska.
+                        Your destination for premium dining and delivery in the heart of Bertoua.
                     </p>
                     
                     <div class="hero-actions">
@@ -43,18 +43,18 @@
                         <div class="stat-divider"></div>
                         <div class="stat-item">
                             <span class="stat-number">50+</span>
-                            <span class="stat-label">Master Chefs</span>
+                            <span class="stat-label">Satisfied customers</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="hero-floating-badge">
+            <!-- <div class="hero-floating-badge">
                 <div class="badge-inner">
                     <i class="fas fa-award"></i>
                     <span>Top Rated 2026</span>
                 </div>
-            </div>
+            </div> -->
         </section>
 <section class="why-choose-us">
     <div class="container">
@@ -134,7 +134,7 @@
 
             <div class="res-card" data-category="fastfood">
                 <div class="res-image">
-                    <img src="https://images.unsplash.com/photo-1594179924451-b5d1ad55225f?auto=format&fit=crop&w=500&q=80" alt="Chicken Spot">
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Chicken Spot">
                     <span class="category-badge">Fast Food</span>
                 </div>
                 <div class="res-info">

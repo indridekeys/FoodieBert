@@ -1,10 +1,10 @@
 /* Shared Variables & Base */
 :root {
-    --primary-blue: #0a192f;        /* Very Dark Blue */
-    --accent-gold: #C5A059;         /* Sophisticated Gold */
-    --light-yellow: #fdf5e6;        /* Very Light Yellow / Cream */
+    --primary-blue: #0a192f;       
+    --accent-gold: #C5A059;         
+    --light-yellow: #fdf5e6;         
     --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    --footer-overlay: rgba(10, 25, 47, 0.72); /* Tweaked for image visibility */
+    --footer-overlay: rgba(10, 25, 47, 0.72); 
 }
 
 /* =========================================
@@ -22,12 +22,14 @@
     box-sizing: border-box;
     z-index: 3000;
     transition: var(--transition);
-    background: transparent;
-    border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+    /* Initially Transparent */
+    background: transparent; 
+    border-bottom: 1px solid rgba(197, 160, 89, 0.1);
 }
 
+/* APPEARS ON SCROLL - Navy Blue Background */
 .foodie-header.scrolled {
-    background: var(--primary-blue);
+    background: var(--primary-blue) !important;
     backdrop-filter: blur(15px);
     height: 85px;
     border-bottom: 2px solid var(--accent-gold);
@@ -144,7 +146,7 @@
 .auth-group {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 15px;
     justify-self: end;
 }
 
@@ -173,14 +175,19 @@
 
 .btn-register:hover { transform: scale(1.05); background: var(--light-yellow); color: var(--primary-blue); }
 
-.hamburger {
-    display: none;
+.user-avatar-circle {
+    transition: all 0.3s ease;
+    border: 2px solid var(--accent-gold);
     cursor: pointer;
-    flex-direction: column;
-    gap: 6px;
-    justify-self: end;
 }
 
+.user-avatar-circle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
+}
+
+/* REST OF THE CSS (Hamburger, Footer, etc.) REMAINS THE SAME */
+.hamburger { display: none; cursor: pointer; flex-direction: column; gap: 6px; justify-self: end; }
 .hamburger span { width: 28px; height: 3px; background: var(--accent-gold); transition: 0.3s; }
 
 .mobile-nav {
@@ -199,8 +206,9 @@
     z-index: 2500;
     border-left: 2px solid var(--accent-gold);
 }
-
 .mobile-nav.active { right: 0; }
+
+/* ... FOOTER STYLES ... (No changes needed) */
 
 /* =========================================
     FOOTER STYLES
