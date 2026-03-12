@@ -15,11 +15,10 @@ class VerificationCodeMail extends Mailable
 
     /**
      * Create a new message instance.
-     * We pass the User object here.
      */
     public function __construct(public User $user)
     {
-        //
+        // The user object is now available throughout this class
     }
 
     /**
@@ -28,7 +27,7 @@ class VerificationCodeMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your FoodieBert Verification Code',
+            subject: 'Empire Access: Your Verification Code & Matricule',
         );
     }
 
@@ -38,7 +37,13 @@ class VerificationCodeMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.verify_code', // This must match your file name in resources/views/emails/
+            view: 'emails.verify_code', 
+            // We pass the specific data points to the view here
+            with: [
+                'name' => $this->user->name,
+                'code' => $this->user->verification_code,
+                'matricule' => $this->user->matricule,
+            ],
         );
     }
 

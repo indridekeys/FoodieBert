@@ -7,44 +7,55 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Registry | FoodieBert</title>
     <style>
-        .password-container {
-            position: relative;
-            display: flex;
-            align-items: center;
+        /* Force container to allow absolute positioning */
+        .form-group {
+            margin-bottom: 20px;
         }
-        .password-container input {
+        
+        .password-wrapper {
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
             width: 100%;
-            padding-right: 45px; /* Space for the icon */
         }
-        .toggle-icon {
-            position: absolute;
-            right: 15px;
-            cursor: pointer;
-            color: rgba(255, 255, 255, 0.5);
-            transition: color 0.3s;
+
+        .password-wrapper input {
+            width: 100%;
+            padding-right: 45px !important; /* Space for the icon */
+            box-sizing: border-box;
         }
-        .toggle-icon:hover {
-            color: #C5A059;
+
+        .eye-toggle {
+            position: absolute !important;
+            right: 15px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            cursor: pointer !important;
+            color: #C5A059 !important; /* Gold color */
+            z-index: 999 !important; /* Force it to the front */
+            font-size: 1.1rem !important;
+            background: transparent !important;
+            border: none !important;
         }
-        .error-alert {
-            background: rgba(255, 77, 77, 0.15);
-            border: 1px solid #ff4d4d;
-            color: #ff4d4d;
+
+        .error-alert, .success-alert {
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 0.85rem;
         }
+        .error-alert { background: rgba(255, 77, 77, 0.15); border: 1px solid #ff4d4d; color: #ff4d4d; }
+        .success-alert { background: rgba(40, 167, 69, 0.15); border: 1px solid #28a745; color: #28a745; }
     </style>
 </head>
-<body>
+<body>@include('components.loader')
     <div class="auth-container">
         <nav class="breadcrumb">
-            <a href="{{ route('home') }}">← Back to Home</a>
+            <a href="{{ url('/') }}">← Back to Home</a>
         </nav>
 
         <div class="auth-card">
-            <h2>Empire Registry</h2>
+            <h2 style="text-align: center; margin-bottom: 20px;">FoodieBert Registry</h2>
 
             @if ($errors->any())
                 <div class="error-alert">
@@ -72,51 +83,49 @@
                 <div class="form-group">
                     <label>Designated Role</label>
                     <select name="role" required>
-                        <option value="customer" {{ old('role') == 'customer' ? 'selected' : '' }}>Customer (Diner)</option>
-                        <option value="delivery_agent" {{ old('role') == 'delivery_agent' ? 'selected' : '' }}>Delivery Agent</option>
-                        <option value="restaurant_owner" {{ old('role') == 'restaurant_owner' ? 'selected' : '' }}>Restaurant Owner</option>
+                        <option value="customer">Customer (Diner)</option>
+                        <option value="agent">Delivery Agent</option>
+                        <option value="owner">Restaurant Owner</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label>Profile Portrait</label>
-                    <input type="file" name="picture" accept="image/*">
+                    <input type="file" name="profile_photo" accept="image/*" required>
                 </div>
 
                 <div class="form-group">
                     <label>Password</label>
-                    <div class="password-container">
+                    <div class="password-wrapper">
                         <input type="password" name="password" id="password" required>
-                        <i class="fas fa-eye toggle-icon" onclick="togglePassword('password', this)"></i>
+                        <i class="fas fa-eye eye-toggle" onclick="togglePass('password', this)"></i>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Confirm Password</label>
-                    <div class="password-container">
+                    <div class="password-wrapper">
                         <input type="password" name="password_confirmation" id="password_confirmation" required>
-                        <i class="fas fa-eye toggle-icon" onclick="togglePassword('password_confirmation', this)"></i>
+                        <i class="fas fa-eye eye-toggle" onclick="togglePass('password_confirmation', this)"></i>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-auth">Join the Empire</button>
+                <button type="submit" class="btn-auth">Register</button>
             </form>
             
-            <div class="switch-link">Already a member? <a href="{{ route('login') }}">Access HQ</a></div>
+            <div class="switch-link">Already a member? <a href="{{ route('login') }}">Login</a></div>
         </div>
     </div>
 
     <script>
-        function togglePassword(inputId, icon) {
-            const passwordInput = document.getElementById(inputId);
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
+        function togglePass(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
             } else {
-                passwordInput.type = "password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
+                input.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
             }
         }
     </script>

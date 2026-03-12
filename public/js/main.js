@@ -97,3 +97,72 @@ window.addEventListener('scroll', () => {
         }
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const observerOptions = { threshold: 0.5 };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                const endValue = parseInt(target.getAttribute('data-target'));
+                animateCount(target, endValue);
+                observer.unobserve(target); // Only animate once
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.stat-number').forEach(num => observer.observe(num));
+
+    function animateCount(element, end) {
+        let start = 0;
+        const duration = 2000; // 2 seconds
+        const startTime = performance.now();
+
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Ease-out function for a smooth finish
+            const currentCount = Math.floor(progress * end);
+            element.innerText = currentCount.toLocaleString() + (end > 1000 ? '+' : '');
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+       
+        }
+        requestAnimationFrame(update);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const animateCount = (element, end) => {
+        let start = 0;
+        const duration = 2000;
+        const startTime = performance.now();
+
+        const update = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            element.innerText = Math.floor(progress * end).toLocaleString();
+            if (progress < 1) requestAnimationFrame(update);
+        };
+        requestAnimationFrame(update);
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            // We added entry.isIntersecting check
+            if (entry.isIntersecting) {
+                const endValue = parseInt(entry.target.getAttribute('data-target'));
+                if(!isNaN(endValue)) {
+                    animateCount(entry.target, endValue);
+                }
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 }); // Lowered threshold to 0.1 so it triggers sooner
+
+    document.querySelectorAll('.stat-number').forEach(num => observer.observe(num));
+});
+});

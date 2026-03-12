@@ -11,7 +11,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // 1. Register the 'role' middleware alias
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+        ]);
+
+        // 2. Keep your existing redirect logic
+        $middleware->redirectTo(
+            guests: '/login',
+            users: '/home' 
+        );
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

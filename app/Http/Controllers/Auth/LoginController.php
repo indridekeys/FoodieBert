@@ -5,62 +5,92 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class LoginController extends Controller
 {
     /**
-     * Handle User Login Attempt
+     * Show the login form.
      */
-    public function login(Request $request)
+    public function showLoginForm()
     {
-        // 1. Validate Input
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        // 2. Check if user exists and is verified
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Auth::attempt($request->only('email', 'password'))) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid credentials.'
-            ], 401);
-        }
-
-        if (!$user->is_verified) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Your account is not verified. Please check your email.'
-            ], 403);
-        }
-
-        // 3. Success: Create Session or Token
-        $request->session()->regenerate();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Login successful',
-            'user' => [
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-                'matricule' => $user->matricule
-            ]
-        ]);
+        return view('auth.login');
     }
 
     /**
-     * Handle Logout
+     * Handle the login attempt.
+     */
+    public function login(Request $request)
+    {
+        // 1. Validation: Ensures password and at least one identifier is present
+        $request->validate([
+            'password'  => 'required|string',
+            'email'     => 'required_without:matricule|nullable',
+            'matricule' => 'required_without:email|nullable|string',
+        ]);
+
+        // 2. Determine if logging in via Matricule or Email
+        $loginField = $request->filled('matricule') ? 'matricule' : 'email';
+        $loginValue = $request->input($loginField);
+
+        $credentials = [
+            $loginField => $loginValue,
+            'password'  => $request->password,
+        ];
+
+        // 3. Attempt Login
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            // Security: Prevent session fixation
+            $request->session()->regenerate();
+
+            // Success: Proceed to logic check
+            return $this->authenticated($request, Auth::user());
+        }
+
+        // 4. Failure: Return to login with error and keep the ID input
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email', 'matricule');
+    }
+
+    /**
+     * Post-authentication logic (Verification check & Redirect)
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        // SKIP verification check for admin and super_admin
+        // This prevents them from being sent back to the home page or verify page
+        if ($user->role !== 'admin' && $user->role !== 'super_admin') {
+            if (isset($user->is_verified) && !$user->is_verified) {
+                return redirect()->route('verify.page'); 
+            }
+        }
+
+        return $this->redirectByRole($user);
+    }
+
+    /**
+     * Role-based routing
+     */
+    private function redirectByRole($user)
+    {
+        return match ($user->role) {
+            'admin', 'super_admin' => redirect()->route('admin.dashboard'),
+            'agent'                => redirect()->route('agent.dashboard'),
+            'owner'                => redirect()->route('owner.dashboard'),
+            'customer'             => redirect()->route('customer.dashboard'),
+            default                => redirect('/'),
+        };
+    }
+
+    /**
+     * Logout and clear session
      */
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return response()->json(['message' => 'Logged out successfully']);
+        
+        return redirect('/login');
     }
 }

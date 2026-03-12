@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -10,16 +11,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="{{ asset('css/style.css') }}"> 
 </head>
-<body> @include('components.header')
+<body>@include('components.loader')
+     @include('components.header')
+     @include('components.restaurant-picker', [
+    'restaurants' => \App\Models\Restaurant::all()
+])
+    
 
     <main>
         <section class="hero-section">
             <div class="hero-overlay"></div>
             <div class="hero-container">
                 <div class="hero-content">
-                    <!-- <span class="hero-subtitle">Premium Culinary Experience</span> -->
+                    <!-- <span class="hero-subtitle">Premium Culinary Experience</span>  -->
                     <h1 class="hero-title">
                         Savor the Art of <br>
                         <span class="text-cursive">Traditional</span> 
@@ -30,10 +37,19 @@
                         Your destination for premium dining and delivery in the heart of Bertoua.
                     </p>
                     
-                    <div class="hero-actions">
-                        <a href="#menu" class="btn-hero-red">Explore Menu</a>
-                        <a href="#reservation" class="btn-hero-outline">Book a Table</a>
-                    </div>
+                    <div class="hero-actions" x-data>
+    <a href="javascript:void(0)" 
+       @click="$dispatch('open-restaurant-picker')" 
+       class="btn-hero-red">
+       Explore Menu
+    </a>
+
+    <a href="javascript:void(0)" 
+       @click="$dispatch('open-restaurant-picker')" 
+       class="btn-hero-outline">
+       Book a Table
+    </a>
+</div>
 
                     <div class="hero-stats">
                         <div class="stat-item">
@@ -64,7 +80,7 @@
                 <h2 class="section-title">Why Choose <span class="text-highlight">FoodieBert</span></h2>
             </div>
             <div class="title-description">
-                <p>We combine ancient traditions with modern precision to deliver an unforgettable dining experience in Alaska.</p>
+                <p>We combine ancient traditions with modern precision to deliver an unforgettable dining experience in Bertoua.</p>
             </div>
         </div>
 
@@ -90,123 +106,89 @@
     </div>
 </section>
 
-<section class="popular-foods">
+<!-- ==================== Restaurants Section Start =================== -->
+<section class="popular-foods"> 
     <div class="container">
         <div class="section-top">
-            <div class="title-group">
-                <span class="text-cursive" style="color: var(--light-red); font-size: 32px;">Local Favorites</span>
-                <h2 class="section-title">Top Restaurants in <span class="text-highlight">Bertoua</span></h2>
-            </div>
-            <div class="title-description">
-                <p>Explore the best dining spots across the Rising Sun city, from traditional delicacies to modern fusion.</p>
+            <div class="title-group" style="width: 100%;">
+                <span class="text-cursive" style="color: var(--light-red); font-size: 28px;">Local Favorites</span>
+                <h2 class="section-title">
+                    Top Restaurants in <span class="text-highlight">Bertoua</span>
+                </h2>
             </div>
         </div>
 
-        <div class="category-filters" style="margin-bottom: 40px;">
-            <button class="filter-btn active" onclick="filterCategory('all')">All Spots</button>
-            <button class="filter-btn" onclick="filterCategory('traditional')">Traditional</button>
-            <button class="filter-btn" onclick="filterCategory('fastfood')">Fast Food</button>
-            <button class="filter-btn" onclick="filterCategory('bakery')">Bakeries</button>
+        <div class="category-filters" style="margin-bottom: 25px;">
+            <button class="filter-btn active" onclick="filterCategory('all')">
+                All ({{ $restaurants->count() }})
+            </button>
+            @foreach(['fine dining', 'eateries', 'cafe', 'fast food', 'snack/bar'] as $cat)
+                <button class="filter-btn" onclick="filterCategory('{{ $cat }}')">
+                    {{ ucwords($cat) }} ({{ $categoryCounts[strtolower($cat)] ?? 0 }})
+                </button>
+            @endforeach
         </div>
 
         <div class="restaurant-grid" id="restaurantGrid">
-            <div class="res-card" data-category="traditional">
-                <div class="res-image">
-                    <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=500&q=80" alt="Le Mistral">
-                    <span class="category-badge">Traditional</span>
-                </div>
-                <div class="res-info">
-                    <h3>Le Mistral Bertoua</h3>
-                    <div class="rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                        <span>- 120+ Reviews</span>
+            @foreach($restaurants->take(8) as $restaurant)
+                <div class="res-card" data-category="{{ trim(strtolower($restaurant->category)) }}">
+                    <div class="res-image"> 
+                        @php
+                            $imagePath = $restaurant->image_url;
+                            if ($imagePath && !Str::startsWith($imagePath, ['http://', 'https://'])) {
+                                $imagePath = asset('storage/' . $imagePath);
+                            }
+                        @endphp
+                        <img src="{{ $imagePath ?? 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=500&q=80' }}" 
+                             alt="{{ $restaurant->name }}">
+                        <span class="category-badge">{{ ucfirst($restaurant->category) }}</span>
                     </div>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Authentic Cameroonian & French Cuisine</p>
-                    <div class="res-footer">
-                        <button class="ribbon-btn">View Menu</button>
-                        <div class="action-icons">
-                            <button class="square-icon"><i class="far fa-heart"></i></button>
-                            <button class="square-icon"><i class="fas fa-map-marker-alt"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="res-card" data-category="fastfood">
-                <div class="res-image">
-                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Chicken Spot">
-                    <span class="category-badge">Fast Food</span>
-                </div>
-                <div class="res-info">
-                    <h3>Bertoua Fried Chicken</h3>
-                    <div class="rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
-                        <span>- 85 Reviews</span>
-                    </div>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Crispy chicken and local street sides.</p>
-                    <div class="res-footer">
-                        <button class="ribbon-btn">Order Now</button>
-                        <div class="action-icons">
-                            <button class="square-icon"><i class="far fa-heart"></i></button>
-                            <button class="square-icon"><i class="fas fa-map-marker-alt"></i></button>
+                    <div class="res-info">
+                        <h3>{{ $restaurant->name }}</h3>
+                        <div class="rating">
+                            <i class="fas fa-star" style="color: #ffc107;"></i>
+                            <span>{{ rand(4, 5) }}.{{ rand(1, 9) }}</span>
                         </div>
-                    </div>
-                </div>
-            </div>
+                        <p>
+                            {{ Str::limit($restaurant->description, 60) }}
+                        </p>
+                        
+                        <div class="res-footer">
+                            {{-- View Menu Ribbon --}}
+                            <a href="{{ route('restaurants.menu', $restaurant->id) }}" class="ribbon-btn">
+                                View Menu
+                            </a>
+                            
+                            <div class="action-icons">
+                                {{-- Favorites --}}
+                                <form action="{{ route('dashboard.redirect') }}" method="GET" style="display:inline;">
+                                    <button type="submit" class="square-icon" title="Add to Favorites">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </form>
 
-            <div class="res-card" data-category="bakery">
-                <div class="res-image">
-                    <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=500&q=80" alt="Sun Bakery">
-                    <span class="category-badge">Bakery</span>
-                </div>
-                <div class="res-info">
-                    <h3>The Sun Bakery</h3>
-                    <div class="rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                        <span>- 210 Reviews</span>
-                    </div>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Fresh pastries and morning coffee.</p>
-                    <div class="res-footer">
-                        <button class="ribbon-btn">Reserve</button>
-                        <div class="action-icons">
-                            <button class="square-icon"><i class="far fa-heart"></i></button>
-                            <button class="square-icon"><i class="fas fa-map-marker-alt"></i></button>
+                                {{-- Google Maps --}}
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($restaurant->name . ' ' . $restaurant->location . ' Bertoua') }}" 
+                                   target="_blank" 
+                                   class="square-icon" 
+                                   title="View on Map">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="res-card" data-category="traditional">
-                <div class="res-image">
-                    <img src="https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=500&q=80" alt="Grill Point">
-                    <span class="category-badge">Grill</span>
-                </div>
-                <div class="res-info">
-                    <h3>Central Grill House</h3>
-                    <div class="rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
-                        <span>- 45 Reviews</span>
-                    </div>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Expertly grilled fish and Ndolé.</p>
-                    <div class="res-footer">
-                        <button class="ribbon-btn">View Menu</button>
-                        <div class="action-icons">
-                            <button class="square-icon"><i class="far fa-heart"></i></button>
-                            <button class="square-icon"><i class="fas fa-map-marker-alt"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
 
         <div class="view-more-container">
-            <a href="#" class="view-more-btn">
-                View All Restaurants <i class="fas fa-plus"></i>
+            <a href="{{ route('restaurants') }}" class="view-more-btn">
+                View All {{ $restaurants->count() }} Restaurants <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     </div>
 </section>
-
 <section class="portal-section dark-theme">
     <div class="container">
         <div class="section-top">
@@ -249,8 +231,9 @@
         </div>
     </div>
 </section>
-        
-
+  <!-- ==================== Restaurants Section End  =================== -->
+         
+     <!--   =============== Blog Section Start  ============================== -->
         <section class="blog-section">
     <div class="container">
         <div class="section-top">
@@ -263,7 +246,7 @@
             </div>
         </div>
 
-        <div class="blog-grid">
+        <!-- <div class="blog-grid">
             <article class="blog-card">
                 <div class="blog-image">
                     <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=600&q=80" alt="Cooking Secrets">
@@ -275,9 +258,9 @@
                     <p>Discover how we balance heat and aroma using traditional Alutiiq influences...</p>
                     <a href="#" class="read-more">Read Story <i class="fas fa-arrow-right"></i></a>
                 </div>
-            </article>
+            </article> -->
 
-            <article class="blog-card">
+            <!-- <article class="blog-card">
                 <div class="blog-image">
                     <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" alt="New Menu">
                     <span class="blog-date">10 Jan 2026</span>
@@ -302,7 +285,7 @@
                     <a href="#" class="read-more">Read Story <i class="fas fa-arrow-right"></i></a>
                 </div>
             </article>
-        </div>
+        </div> -->
 
         <div class="view-more-container">
             <a href="#" class="view-more-btn">
@@ -311,9 +294,65 @@
         </div>
     </div>
 </section>
+<!--   =============== Blog Section End  ============================== -->
     </main>
 
     @include('components.footer')
     <script src="{{ asset('js/script.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+    const swiper = new Swiper(".featuredSwiper", {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        loop: true,
+        autoplay: {
+            delay: 4000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+        },
+    });
+
+    function filterCategory(category) {
+    const cards = document.querySelectorAll('.res-card');
+    const buttons = document.querySelectorAll('.filter-btn');
+
+    // 1. Update active button state
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+        // Matches the button based on the text content to set active state
+        if (btn.innerText.toLowerCase() === category.toLowerCase()) {
+            btn.classList.add('active');
+        } else if (category === 'all' && btn.innerText.toLowerCase() === 'all spots') {
+            btn.classList.add('active');
+        }
+    });
+
+    // 2. Filter the restaurant cards
+    cards.forEach(card => {
+        // We clean the category string to match how it's stored in data-category
+        const cardCategory = card.getAttribute('data-category').toLowerCase().trim();
+        const selectedCategory = category.toLowerCase().trim();
+
+        if (selectedCategory === 'all' || cardCategory === selectedCategory) {
+            card.style.display = 'block';
+            card.style.animation = 'fadeIn 0.5s ease forwards';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+</script>
 </body>
 </html>

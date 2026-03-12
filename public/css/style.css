@@ -221,7 +221,7 @@ body {
     box-shadow: 0 4px 15px rgba(231, 76, 60, 0.2);
 }
 
-/* Grid & Card Animation Logic */
+/* Grid & Card Logic */
 .restaurant-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -231,26 +231,11 @@ body {
 
 .res-card {
     background: white;
-    overflow: visible;
+    overflow: hidden; /* Changed from visible to keep it clean */
     box-shadow: var(--shadow-soft);
     transition: var(--transition);
     border: 1px solid rgba(197, 160, 89, 0.1);
-    display: block; /* Visible by default */
-}
-
-/* Filtering Animations */
-.hide-category {
-    display: none !important;
-}
-
-.show-category {
-    animation: fadeInScale 0.4s forwards;
     display: block;
-}
-
-@keyframes fadeInScale {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
 }
 
 .res-card:hover {
@@ -263,16 +248,18 @@ body {
     position: relative;
     height: 220px;
     overflow: hidden;
-    border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
 }
 
 .res-image img {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover;
 }
 
 .category-badge {
     position: absolute;
-    bottom: 15px; right: 0;
+    bottom: 15px; 
+    right: 0;
     background: var(--light-red);
     color: #fff;
     padding: 6px 15px;
@@ -286,22 +273,19 @@ body {
 .res-info h3 {
     font-family: var(--font-heading);
     color: var(--primary-blue);
-    font-size: 20px; margin-bottom: 10px;
+    font-size: 20px; 
+    margin-bottom: 10px;
 }
 
 .rating { color: var(--accent-gold); font-size: 13px; margin-bottom: 10px; }
 .rating span { color: #888; margin-left: 5px; }
 
-.price-row { margin-bottom: 25px; }
-.current-price { font-size: 22px; font-weight: 800; color: var(--accent-gold); }
-.old-price { text-decoration: line-through; color: #aaa; margin-left: 8px; }
-
-/* Ribbon Add to Cart Button */
+/* RECTANGULAR BUTTON (Shape Removed) */
 .res-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
+    padding-top: 10px;
 }
 
 .ribbon-btn {
@@ -311,28 +295,32 @@ body {
     padding: 10px 20px;
     font-weight: 700;
     font-size: 13px;
-    position: relative;
-    left: -20px;
-    box-shadow: 4px 4px 10px rgba(231, 76, 60, 0.2);
+    border-radius: var(--border-radius-sm); /* Standard rectangular rounded corners */
+    transition: var(--transition);
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2);
 }
 
+/* Removed the ::before pseudo-element that created the fold shape */
 .ribbon-btn::before {
-    content: '';
-    position: absolute;
-    top: -10px; left: 0;
-    border-left: 10px solid transparent;
-    border-bottom: 10px solid var(--dark-red);
+    display: none; 
 }
 
-.ribbon-btn:hover { background: var(--primary-blue); padding-left: 25px; }
+.ribbon-btn:hover { 
+    background: var(--primary-blue); 
+    transform: translateY(-2px);
+}
 
 /* Icon Buttons */
 .action-icons { display: flex; gap: 8px; }
 .square-icon {
-    width: 38px; height: 38px;
+    width: 38px; 
+    height: 38px;
     border: 1px solid #ddd;
     background: #fff;
     color: var(--accent-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .square-icon:hover {
@@ -345,30 +333,36 @@ body {
     5. VIEW MORE & RESPONSIVE
    ========================================= */
 .view-more-container {
-    display: flex; justify-content: center;
-    width: 100%; margin-top: 50px; padding-bottom: 60px;
+    display: flex; 
+    justify-content: center;
+    width: 100%; 
+    margin-top: 50px; 
+    padding-bottom: 60px;
 }
 
 .view-more-btn {
-    padding: 12px 30px; 
+    padding: 15px 40px; 
     background-color: var(--light-red);
     color: #ffffff;
-    font-weight: 600;
-    font-size: 13px;
+    font-weight: 700;
+    font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    border-radius: var(--border-radius-sm);
+    border: none;
+    transition: var(--transition);
 }
 
 .view-more-btn:hover {
-    background-color: transparent;
-    color: var(--light-red);
-    transform: translateY(-2px);
-    border: 1px solid var(--light-red);
+    background-color: var(--primary-blue);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(10, 25, 47, 0.2);
 }
 
+/* Responsive Queries */
 @media (max-width: 1200px) {
     .restaurant-grid { grid-template-columns: repeat(2, 1fr); }
-    .hero-container { padding: 0 30px; }
 }
 
 @media (max-width: 768px) {
@@ -378,7 +372,6 @@ body {
 
 @media (max-width: 600px) {
     .restaurant-grid { grid-template-columns: 1fr; }
-    .hero-title { font-size: 45px; }
 }
 
 
@@ -445,11 +438,11 @@ body {
         }
     }
 /* =========================================
-    WHY CHOOSE US (White Version)
+    WHY CHOOSE US 
    ========================================= */
 .why-choose-us {
     padding: 100px 60px;
-    background-color: #ffffff; /* Section background set to white */
+    background-color: #ffffff; 
 }
 
 /* Header Alignment */
@@ -458,17 +451,17 @@ body {
     justify-content: space-between;
     align-items: flex-end;
     margin-bottom: 60px;
-    border-bottom: 2px solid rgba(10, 25, 47, 0.1); /* Darker line for white background */
+    border-bottom: 2px solid rgba(10, 25, 47, 0.1); 
     padding-bottom: 25px;
 }
 
 /* Branding Spacing */
 .why-choose-us .section-title {
-    color: var(--primary-blue); /* Navy text for contrast */
+    color: var(--primary-blue); 
 }
 
 .why-choose-us .title-description p {
-    color: #555555; /* Darker grey for readability on white */
+    color: #555555; 
     max-width: 450px;
     text-align: right;
     font-size: 15px;
@@ -680,12 +673,12 @@ body {
    ========================================= */
 .portal-section.dark-theme {
     padding: 100px 60px;
-    background-color: var(--primary-blue); /* Deep Navy Background */
+    background-color: var(--primary-blue); 
 }
 
 /* Header Adjustments */
 .portal-section.dark-theme .section-top {
-    border-bottom: 2px solid rgba(197, 160, 89, 0.2); /* Gold subtle divider */
+    border-bottom: 2px solid rgba(197, 160, 89, 0.2); 
 }
 
 .portal-grid {
@@ -695,7 +688,7 @@ body {
 }
 
 .portal-card {
-    background: rgba(255, 255, 255, 0.03); /* Subtle glass effect */
+    background: rgba(255, 255, 255, 0.03); 
     padding: 50px 40px;
     border: 1px solid rgba(197, 160, 89, 0.1);
     border-radius: var(--border-radius-sm);
@@ -832,3 +825,4 @@ body {
         transform: translateY(0);
     }
 }
+

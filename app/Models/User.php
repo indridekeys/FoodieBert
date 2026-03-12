@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
@@ -21,7 +22,7 @@ class User extends Authenticatable
         'password',
         'role',
         'matricule',
-        'picture', // Matches your field name
+        'profile_photo', 
         'verification_code',
         'is_verified',
     ];
@@ -79,5 +80,22 @@ class User extends Authenticatable
                 $user->matricule = $prefix . str_pad($number, 2, '0', STR_PAD_LEFT);
             }
         });
+
+        
     }
+
+    // app/Models/User.php
+
+    public function restaurants(): HasMany
+    {
+        return $this->hasMany(Restaurant::class);
+    }
+
+public function orders() {
+    return $this->hasMany(Order::class, 'agent_id');
+}
+
+public function transactions() {
+    return $this->hasMany(Transaction::class);
+}
 }
