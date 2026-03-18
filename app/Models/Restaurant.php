@@ -26,6 +26,11 @@ class Restaurant extends Model
         'cover_image'  // Added for the Landing Page Hero
     ];
 
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
     /**
      * Boot function to automatically generate a slug from the name
      */

@@ -9,11 +9,11 @@
         align-items: center;
         background: #0a192f; 
         border: 2px solid #C5A059;
-        padding: 5px 10px; /* Reduced padding for square look */
+        padding: 5px 12px;
         border-radius: 4px;
         text-decoration: none;
         transition: all 0.3s ease;
-        margin-right: 80px; /* Pushes the NavLink very far away */
+        margin-right: 80px;
     }
 
     .header-logo-box:hover {
@@ -23,14 +23,18 @@
     .crazy-icons-static {
         display: flex;
         align-items: center;
-        gap: 3px; /* Very close together */
-        margin-right: 6px; /* Very close to text */
-        font-size: 1.2rem;
+        margin-right: 10px;
+        /* Increased icon size */
+        font-size: 1.8rem; 
+        line-height: 1;
     }
     
-    /* Standing straight */
-    .icon-spoon { color: #C5A059; transform: rotate(0deg); }
-    .icon-fork { color: #FF69B4; transform: rotate(0deg); }
+    .icon-fork { 
+        color: #FF69B4; 
+        transform: rotate(0deg); 
+        display: inline-block;
+        vertical-align: middle;
+    }
 
     .logo-text {
         font-family: 'Comic Sans MS', 'Cursive', sans-serif;
@@ -38,6 +42,8 @@
         margin: 0;
         line-height: 1;
         white-space: nowrap;
+        display: flex;
+        align-items: center;
     }
 
     /* --- REST OF STYLES --- */
@@ -153,7 +159,6 @@
 <header class="foodie-header" id="mainHeader">
     <a href="{{ route('home') }}" class="header-logo-box">
         <div class="crazy-icons-static">
-            <i class="fas fa-spoon icon-spoon"></i>
             <i class="fas fa-utensils icon-fork"></i>
         </div>
         <h1 class="logo-text">
@@ -277,7 +282,6 @@
 </div>
 
 <script>
-    // All original scripts preserved
     const hamburger = document.getElementById('hamburger');
     const mobileNav = document.getElementById('mobileNav');
     if(hamburger && mobileNav) {

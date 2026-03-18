@@ -23,22 +23,28 @@
     .footer-logo-box .crazy-icons-static {
         display: flex;
         align-items: center;
-        gap: 4px;
         margin-right: 8px;
-        font-size: 1.1rem;
+        /* Matches height with the larger Great Vibes text */
+        font-size: 1.8rem; 
+        line-height: 1;
     }
     
     /* Standing straight as requested */
-    .footer-logo-box .icon-spoon { color: #C5A059; transform: rotate(0deg); }
-    .footer-logo-box .icon-fork { color: #FF69B4; transform: rotate(0deg); }
+    .footer-logo-box .icon-fork { 
+        color: #FF69B4; 
+        transform: rotate(0deg); 
+        vertical-align: middle;
+    }
 
     .footer-logo-box .logo-text {
-        font-family: 'Great Vibes', cursive; /* Applied Great Vibes */
-        font-size: 1.8rem; /* Increased size because Great Vibes runs small */
+        font-family: 'Great Vibes', cursive;
+        font-size: 1.8rem; 
         margin: 0;
         line-height: 1;
         white-space: nowrap;
         letter-spacing: 1px;
+        display: flex;
+        align-items: center;
     }
 
     /* Standardizing dot color in links */
@@ -61,7 +67,6 @@
         <div class="footer-column">
             <a href="{{ route('home') }}" class="footer-logo-box">
                 <div class="crazy-icons-static">
-                    <i class="fas fa-spoon icon-spoon"></i>
                     <i class="fas fa-utensils icon-fork"></i>
                 </div>
                 <h1 class="logo-text">

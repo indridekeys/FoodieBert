@@ -29,28 +29,27 @@ class RestaurantController extends Controller
 
     /**
      * Display the single restaurant "Details" / Menu page
-     * Updated to find by ID or Slug for the Picker redirection
+     * Updated to include eager loading for posts to fix the 500 error
      */
-   public function showMenu($identifier)
-{
-    // Try to find by slug first, only if the identifier isn't numeric
-    // This prevents PGSQL from complaining about type mismatches
-    $query = \App\Models\Restaurant::query();
+    public function showMenu($identifier)
+    {
+        // Added .with(['posts']) to ensure the collection exists for the @foreach loop
+        $query = \App\Models\Restaurant::with(['posts', 'menus', 'galleries', 'staff']);
 
-    if (is_numeric($identifier)) {
-        $restaurant = $query->where('id', $identifier)->firstOrFail();
-    } else {
-        $restaurant = $query->where('slug', $identifier)->firstOrFail();
+        if (is_numeric($identifier)) {
+            $restaurant = $query->where('id', $identifier)->firstOrFail();
+        } else {
+            $restaurant = $query->where('slug', $identifier)->firstOrFail();
+        }
+
+        $menuByCategory = [
+            'Chef Specials' => [],
+            'Main Courses' => [],
+            'Drinks' => []
+        ];
+
+        return view('menu', compact('restaurant', 'menuByCategory'));
     }
-
-    $menuByCategory = [
-        'Chef Specials' => [],
-        'Main Courses' => [],
-        'Drinks' => []
-    ];
-
-    return view('menu', compact('restaurant', 'menuByCategory'));
-}
 
     /**
      * Download a single restaurant record as PDF

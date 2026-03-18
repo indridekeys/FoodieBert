@@ -72,6 +72,10 @@
         align-items: center;
     }
 
+    @media (max-width: 992px) {
+        .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    }
+
     .gold-title {
         color: var(--accent-gold);
         font-weight: 700;
@@ -120,6 +124,10 @@
         padding: 15px;
     }
 
+    @media (max-width: 768px) {
+        .gallery-container { grid-template-columns: repeat(2, 1fr); }
+    }
+
     .gallery-item { overflow: hidden; position: relative; cursor: pointer; }
     .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
     .gallery-item:hover img { transform: scale(1.1); }
@@ -142,6 +150,7 @@
         background: #fff;
         border-left: 5px solid var(--dark-red);
         transition: 0.3s;
+        height: 100%;
     }
     .blog-card:hover { transform: translateY(-10px); }
 
@@ -197,15 +206,17 @@
         </div>
 
         <div class="menu-grid">
-            @foreach($restaurant->menus as $item)
-            <div class="menu-item">
-                <div>
-                    <h4>{{ $item->dish_name }}</h4>
-                    <small style="color: #888;">{{ $item->ingredients }}</small>
+            @forelse($restaurant->menus as $item)
+                <div class="menu-item">
+                    <div>
+                        <h4>{{ $item->dish_name }}</h4>
+                        <small style="color: #888;">{{ $item->ingredients }}</small>
+                    </div>
+                    <div class="menu-price">${{ $item->price }}</div>
                 </div>
-                <div class="menu-price">${{ $item->price }}</div>
-            </div>
-            @endforeach
+            @empty
+                <p style="text-align: center; grid-column: 1/-1; opacity: 0.5;">Our seasonal menu is being updated.</p>
+            @endforelse
         </div>
         
         <div style="text-align: center; margin-top: 60px;">
@@ -219,11 +230,14 @@
             <h2 class="playfair-heading">Inside {{ $restaurant->name }}</h2>
         </div>
         <div class="gallery-container">
-            @foreach($restaurant->gallery as $photo)
-            <div class="gallery-item">
-                <img src="{{ asset('storage/' . $photo->path) }}" alt="Gallery">
-            </div>
-            @endforeach
+            {{-- Check both possible relationship names --}}
+            @forelse($restaurant->galleries ?? $restaurant->gallery ?? [] as $photo)
+                <div class="gallery-item">
+                    <img src="{{ asset('storage/' . $photo->path) }}" alt="Gallery">
+                </div>
+            @empty
+                <p style="text-align: center; grid-column: 1/-1; color: var(--text-gray);">Gallery coming soon.</p>
+            @endforelse
         </div>
     </section>
 
@@ -233,20 +247,20 @@
             <h2 class="playfair-heading">Meet Our Team</h2>
         </div>
         <div class="about-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-    @forelse($restaurant->staff as $member)
-    <div class="team-card">
-        <img src="{{ $member->photo ? asset('storage/' . $member->photo) : 'https://ui-avatars.com/api/?name='.urlencode($member->name).'&background=001f3f&color=D4AF37' }}" class="team-img">
-        <div class="team-info">
-            <h3 style="font-family: 'Playfair Display'; margin: 0;">{{ $member->name }}</h3>
-            <span style="color: #D4AF37; font-size: 0.9rem; font-weight: 700;">{{ $member->position }}</span>
+            @forelse($restaurant->staff as $member)
+                <div class="team-card">
+                    <img src="{{ $member->photo ? asset('storage/' . $member->photo) : 'https://ui-avatars.com/api/?name='.urlencode($member->name).'&background=001f3f&color=D4AF37' }}" class="team-img">
+                    <div class="team-info">
+                        <h3 style="font-family: 'Playfair Display'; margin: 0;">{{ $member->name }}</h3>
+                        <span style="color: #D4AF37; font-size: 0.9rem; font-weight: 700;">{{ $member->position }}</span>
+                    </div>
+                </div>
+            @empty
+                <p style="text-align: center; grid-column: 1/-1; color: #D4AF37; opacity: 0.6;">
+                    Our team of culinary masters is preparing for your arrival.
+                </p>
+            @endforelse
         </div>
-    </div>
-    @empty
-    <p style="text-align: center; grid-column: 1/-1; color: #D4AF37; opacity: 0.6;">
-        Our team of culinary masters is preparing for your arrival.
-    </p>
-    @endforelse
-</div>
     </section>
 
     <section class="section-padding">
@@ -259,16 +273,20 @@
         </div>
         
         <div class="menu-grid">
-            @foreach($restaurant->posts as $post)
-            <div class="blog-card">
-                <div style="padding: 30px;">
-                    <small style="color: var(--accent-gold); font-weight: 800;">{{ $post->created_at->format('M d, Y') }}</small>
-                    <h3 style="font-family: 'Playfair Display'; margin: 15px 0;">{{ $post->title }}</h3>
-                    <p style="color: var(--text-gray); font-size: 0.95rem;">{{ Str::limit($post->content, 100) }}</p>
-                    <a href="#" style="color: var(--light-red); text-decoration: none; font-weight: 700;">Read More</a>
+            @forelse($restaurant->posts ?? [] as $post)
+                <div class="blog-card">
+                    <div style="padding: 30px;">
+                        <small style="color: var(--accent-gold); font-weight: 800;">{{ $post->created_at->format('M d, Y') }}</small>
+                        <h3 style="font-family: 'Playfair Display'; margin: 15px 0;">{{ $post->title }}</h3>
+                        <p style="color: var(--text-gray); font-size: 0.95rem;">{{ Str::limit($post->content, 100) }}</p>
+                        <a href="#" style="color: var(--light-red); text-decoration: none; font-weight: 700;">Read More</a>
+                    </div>
                 </div>
-            </div>
-            @endforeach
+            @empty
+                <div class="col-12" style="text-align: center; padding: 40px; border: 1px dashed #ccc; grid-column: 1/-1;">
+                    <p style="color: var(--text-gray);">Check back soon for new stories and updates!</p>
+                </div>
+            @endforelse
         </div>
     </section>
 
