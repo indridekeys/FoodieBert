@@ -59,9 +59,21 @@ class Restaurant extends Model
         return $this->hasMany(Menu::class);
     }
 
-    // app/Models/Restaurant.php
-public function staff(): \Illuminate\Database\Eloquent\Relations\HasMany
-{
-    return $this->hasMany(Staff::class);
-}
+
+/**
+     * Get the galleries for the restaurant.
+     */
+    public function galleries(): HasMany
+    {
+        return $this->hasMany(Gallery::class);
+    }
+
+    /**
+     * Get the staff for the restaurant.
+     * Adding this now because your controller also calls for 'staff'
+     */
+    public function staff(): HasMany
+    {
+        return $this->hasMany(Staff::class);
+    }
 }

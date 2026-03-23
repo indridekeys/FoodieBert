@@ -21,10 +21,21 @@
         .breadcrumb-item { text-decoration: none; color: #001f3f; transition: color 0.3s; }
         .breadcrumb-item:hover { color: #D4AF37; }
         .breadcrumb-current { color: #D4AF37; font-weight: 600; }
+
+        /* Status Badges */
+        .badge-pending { background: #fef9c3; color: #854d0e; }
+        .badge-confirmed { background: #dcfce7; color: #166534; }
+        .badge-cancelled { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 
 <body>
+
+@if(session('success'))
+    <div style="position: fixed; top: 20px; right: 20px; background: #001f3f; color: #D4AF37; padding: 15px 25px; border-radius: 8px; z-index: 20000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-bottom: 3px solid #D4AF37;">
+        <i class="fas fa-check-circle"></i> {{ session('success') }}
+    </div>
+@endif
 
 <div id="modal-menu-management" class="modal-full-page">
     <div style="max-width: 1200px; margin: 0 auto;">
@@ -156,11 +167,9 @@
     <nav style="flex-grow: 1;">
         <a href="{{ route('owner.dashboard') }}" class="nav-item active"><i class="fas fa-chart-pie"></i> Revenue Overview</a>
         <a href="javascript:void(0)" class="nav-item" onclick="toggleModal('modal-menu-management')"><i class="fas fa-utensils"></i> Manage Menus</a>
-        
         <a href="javascript:void(0)" class="nav-item" onclick="toggleModal('modal-gallery-management')"><i class="fas fa-images"></i> Visual Gallery</a>
-        
         <a href="#orders" class="nav-item"><i class="fas fa-moped"></i> Active Orders</a>
-        </nav>
+    </nav>
 </aside>
 
 <main class="main">
@@ -239,16 +248,37 @@
     <div class="data-container">
         <table id="bookingsTable">
             <thead>
-                <tr><th>Guest</th><th>Establishment</th><th>Date & Time</th><th>Seats</th><th>Status</th></tr>
+                <tr>
+                    <th>Guest</th>
+                    <th>Establishment</th>
+                    <th>Date & Time</th>
+                    <th>Seats</th>
+                    <th>Status</th>
+                    <th>Update Action</th>
+                </tr>
             </thead>
             <tbody>
                 @foreach($bookings as $book)
                 <tr>
-                    <td>{{ $book->guest_name }}</td>
+                    <td><strong>{{ $book->name }}</strong></td>
                     <td>{{ $book->restaurant->name }}</td>
-                    <td>{{ \Carbon\Carbon::parse($book->reservation_time)->format('M d, H:i') }}</td>
-                    <td>{{ $book->guests_count }}</td>
-                    <td><span class="badge">{{ $book->status }}</span></td>
+                    <td>{{ $book->date }} at {{ $book->time }}</td>
+                    <td>{{ $book->guests }} Guests</td>
+                    <td>
+                        <span class="badge {{ 'badge-'.$book->status }}">
+                            {{ strtoupper($book->status) }}
+                        </span>
+                    </td>
+                    <td>
+                        <form action="{{ route('owner.bookings.update-status', $book->id) }}" method="POST">
+                            @csrf @method('PATCH')
+                            <select name="status" onchange="this.form.submit()" style="padding: 5px; border-radius: 4px;">
+                                <option value="pending" {{ $book->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="confirmed" {{ $book->status == 'confirmed' ? 'selected' : '' }}>Confirm</option>
+                                <option value="cancelled" {{ $book->status == 'cancelled' ? 'selected' : '' }}>Decline</option>
+                            </select>
+                        </form>
+                    </td>
                 </tr>
                 @endforeach
             </tbody>
@@ -263,7 +293,6 @@
             ? (id === 'modal-menu-management' ? 'block' : 'flex') : 'none';
     }
 
-    // Logic for Menu Search
     function filterTable(inputId, tableId) {
         let input = document.getElementById(inputId);
         let filter = input.value.toLowerCase();
@@ -276,19 +305,16 @@
         }
     }
 
-    // Logic for Global Search (filters Orders and Bookings simultaneously)
     function globalSearch() {
         filterTable('globalSearch', 'ordersTable');
         filterTable('globalSearch', 'bookingsTable');
     }
 
-
     function updateGalleryAction() {
-    const resId = document.getElementById('gallery_res_id').value;
-    const form = document.getElementById('galleryForm');
-    // Updated to include the /owner/ prefix based on the new routes
-    form.action = `/owner/restaurants/${resId}/gallery`;
-}
+        const resId = document.getElementById('gallery_res_id').value;
+        const form = document.getElementById('galleryForm');
+        form.action = `/owner/restaurants/${resId}/gallery`;
+    }
 </script>
 
 </body>

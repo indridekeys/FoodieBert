@@ -192,29 +192,30 @@
         </div>
     </div>
 </div>
-
-   <div class="modal-overlay" id="modal-res" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #fff; z-index: 1100;">
-    <div class="modal-content" style="width: 100vw; height: 100vh; max-width: none; border-radius: 0; overflow-y: auto; padding: 60px 40px;">
-        <div style="max-width: 800px; margin: 0 auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-                <h3 id="modal-title" style="font-family: 'Playfair Display'; margin: 0; font-size: 2rem;">
-                    <i class="fas fa-plus-circle" style="color: var(--accent-gold);"></i> New Establishment
-                </h3>
-                <button onclick="closeModal('modal-res')" style="background:none; border:none; font-size:2.5rem; cursor:pointer; color: #ccc;">&times;</button>
-            </div>
+    <!-- ======================= RESTAURANT UPDATE START ===================== -->
+ <div class="modal-overlay" id="modal-res" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 31, 63, 0.9); z-index: 1100; backdrop-filter: blur(5px);">
+    <div class="modal-content" style="width: 100vw; height: 100vh; max-width: none; overflow-y: auto; padding: 60px 40px; background: #fff;">
+        <div style="max-width: 900px; margin: 0 auto;">
             
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 2px solid #f4f4f4; padding-bottom: 20px;">
+                <h3 id="modal-title" style="font-family: 'Playfair Display', serif; margin: 0; font-size: 2rem; color: #004d40;">
+                    <i class="fas fa-plus-circle" style="color: #D4AF37;"></i> New Establishment
+                </h3>
+                <button onclick="closeModal('modal-res')" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: #004d40;">&times;</button>
+            </div>
+
             <form id="restaurantForm" action="{{ route('admin.restaurants.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="_method" id="form-method" value="POST">
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 25px;">
                     <div>
-                        <label style="font-size:0.75rem; font-weight:700; color:#444; display:block; margin-bottom:10px;">ESTABLISHMENT NAME</label>
+                        <label style="font-size:0.75rem; font-weight:700; color:#004d40; display:block; margin-bottom:10px; letter-spacing: 1px;">ESTABLISHMENT NAME</label>
                         <input type="text" name="name" id="field-name" class="form-control" required style="width:100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
                     </div>
                     <div>
-                        <label style="font-size:0.75rem; font-weight:700; color:#444; display:block; margin-bottom:10px;">CATEGORY</label>
-                        <select name="category" id="field-category" class="form-control" style="width:100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                        <label style="font-size:0.75rem; font-weight:700; color:#004d40; display:block; margin-bottom:10px; letter-spacing: 1px;">CATEGORY</label>
+                        <select name="category" id="field-category" class="form-control" style="width:100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
                             <option value="Fine Dining">Fine Dining</option>
                             <option value="Cafe">Cafe</option>
                             <option value="Casual Eateries">Casual Eateries</option>
@@ -226,41 +227,44 @@
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 25px;">
                     <div>
-                        <label style="font-size:0.75rem; font-weight:700; color:#444; display:block; margin-bottom:10px;">PROPRIETOR NAME</label>
+                        <label style="font-size:0.75rem; font-weight:700; color:#004d40; display:block; margin-bottom:10px; letter-spacing: 1px;">PROPRIETOR NAME</label>
                         <input type="text" name="owner_name" id="field-owner-name" class="form-control" required style="width:100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
                     </div>
                     <div>
-                        <label style="font-size:0.75rem; font-weight:700; color:#444; display:block; margin-bottom:10px;">OWNER EMAIL (FOR NOTIFICATIONS)</label>
-                        <input type="email" name="owner_email" id="field-owner-email" class="form-control" required style="width:100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px;" placeholder="owner@example.com">
+                        <label style="font-size:0.75rem; font-weight:700; color:#004d40; display:block; margin-bottom:10px; letter-spacing: 1px;">OWNER EMAIL</label>
+                        <input type="email" name="owner_email" id="field-owner-email" class="form-control" required style="width:100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
                     </div>
                 </div>
 
                 <div style="margin-bottom: 25px;">
-                    <label style="font-size:0.75rem; font-weight:700; color:#444; display:block; margin-bottom:10px;">LOCATION ADDRESS</label>
+                    <label style="font-size:0.75rem; font-weight:700; color:#004d40; display:block; margin-bottom:10px; letter-spacing: 1px;">LOCATION ADDRESS (BERTOUA)</label>
                     <input type="text" name="location" id="field-location" class="form-control" required style="width:100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
                 </div>
 
                 <div style="margin-bottom: 25px;">
-                    <label style="font-size:0.75rem; font-weight:700; color:#444; display:block; margin-bottom:10px;">DESCRIPTION</label>
+                    <label style="font-size:0.75rem; font-weight:700; color:#004d40; display:block; margin-bottom:10px; letter-spacing: 1px;">DESCRIPTION</label>
                     <textarea name="description" id="field-description" rows="4" style="width:100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px; resize: none;"></textarea>
                 </div>
 
                 <div style="margin-bottom: 40px;">
-                    <label style="font-size:0.75rem; font-weight:700; color:#444; display:block; margin-bottom:10px;">UPLOAD IMAGE</label>
+                    <label style="font-size:0.75rem; font-weight:700; color:#004d40; display:block; margin-bottom:10px; letter-spacing: 1px;">UPLOAD IMAGE</label>
                     <div style="display: flex; gap: 20px; align-items: center;">
-                        <img id="imagePreview" src="https://via.placeholder.com/100" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover; border: 1px solid #ddd;">
-                        <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(this)" style="flex: 1; padding: 15px; border: 2px dashed #eee; border-radius: 8px;">
+                        <img id="imagePreview" src="https://via.placeholder.com/100" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; border: 2px solid #D4AF37;">
+                        <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(this)" style="flex: 1; padding: 15px; border: 2px dashed #ddd; border-radius: 8px;">
                     </div>
                 </div>
 
                 <div style="display: flex; gap: 20px;">
-                    <button type="submit" class="btn-primary" style="flex: 2; padding: 20px; font-weight: 700; border-radius: 10px; font-size: 1rem;">Save Establishment Data</button>
-                    <button type="button" onclick="closeModal('modal-res')" style="flex: 1; background: #f4f4f4; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Go Back</button>
+                    <button type="submit" class="btn-primary" style="flex: 2; padding: 20px; font-weight: 700; border-radius: 10px; font-size: 1rem; background: #004d40; color: #D4AF37; border: 1px solid #D4AF37; cursor: pointer;">Save Establishment Data</button>
+                    <button type="button" onclick="closeModal('modal-res')" style="flex: 1; background: #f4f4f4; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; color: #666;">Go Back</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+   <!-- ======================= RESTAURANT UPDATE END ===================== -->
+
+
     <div class="modal-overlay" id="modal-account">
         <div class="modal-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
@@ -550,26 +554,77 @@
         showModal('modal-res');
     }
 
+   
+    
     function editRestaurant(res) {
-        const form = document.getElementById('restaurantForm');
-        const title = document.getElementById('modal-title');
-        
-        form.action = `/admin/restaurants/${res.id}`;
-        document.getElementById('form-method').value = "PATCH";
-        title.innerHTML = '<i class="fas fa-edit" style="color: var(--accent-gold);"></i> Update ' + res.name;
-        
-        document.getElementById('field-name').value = res.name;
-        document.getElementById('field-category').value = res.category;
-        document.getElementById('field-owner-name').value = res.owner_name;
-        document.getElementById('field-owner-email').value = res.owner_email;
-        document.getElementById('field-location').value = res.location;
-        document.getElementById('field-description').value = res.description;
-        
-        if(res.image_url) {
-            document.getElementById('imagePreview').src = `/storage/${res.image_url}`;
-        }
-        showModal('modal-res');
+    const form = document.getElementById('restaurantForm');
+    const title = document.getElementById('modal-title');
+    const methodInput = document.getElementById('form-method');
+    
+    // 1. Update the URL to include the ID
+    form.action = `/admin/restaurants/${res.id}`;
+    
+    // 2. Change method to PUT (Fixes the 405 error)
+    methodInput.value = "PUT";
+    
+    // 3. Update Visuals
+    title.innerHTML = '<i class="fas fa-edit" style="color: #D4AF37;"></i> Update ' + res.name;
+    
+    // 4. Populate Fields
+    document.getElementById('field-name').value = res.name;
+    document.getElementById('field-category').value = res.category;
+    document.getElementById('field-owner-name').value = res.owner_name;
+    document.getElementById('field-owner-email').value = res.owner_email;
+    document.getElementById('field-location').value = res.location;
+    document.getElementById('field-description').value = res.description;
+    
+    // 5. Image Preview Handling
+    if(res.image_url) {
+        document.getElementById('imagePreview').src = `/storage/${res.image_url}`;
+    } else {
+        document.getElementById('imagePreview').src = "https://via.placeholder.com/100";
     }
+    
+    showModal('modal-res');
+}
+
+// Ensure you call this function when clicking the "Add New Restaurant" button
+function openAddModal() {
+    const form = document.getElementById('restaurantForm');
+    const title = document.getElementById('modal-title');
+    const methodInput = document.getElementById('form-method');
+
+    // Reset to store route and POST method
+    form.action = "{{ route('admin.restaurants.store') }}";
+    methodInput.value = "POST";
+    
+    title.innerHTML = '<i class="fas fa-plus-circle" style="color: #D4AF37;"></i> Register New Establishment';
+    
+    form.reset();
+    document.getElementById('imagePreview').src = "https://via.placeholder.com/100";
+    showModal('modal-res');
+}
+
+
+// Add this function to your "Add New" button to clear the form properly
+function openAddModal() {
+    const form = document.getElementById('restaurantForm');
+    const title = document.getElementById('modal-title');
+    const methodField = document.getElementById('form-method');
+    
+    // Reset to Store Route and POST method
+    form.action = "{{ route('admin.restaurants.store') }}";
+    methodField.value = "POST";
+    
+    // Reset Title
+    title.innerHTML = '<i class="fas fa-plus-circle" style="color: #D4AF37;"></i> Register New Establishment';
+    
+    // Clear the form
+    form.reset();
+    document.getElementById('imagePreview').src = "https://via.placeholder.com/100";
+    
+    showModal('modal-res');
+}
 
     // --- Message & Reply Logic ---
     function viewMessage(msg) {

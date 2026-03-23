@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\DashboardController;
 use App\Http\Controllers\Admin\RestaurantController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\BookingController; 
 use App\Models\Restaurant;
 use App\Models\User;
 use App\Models\Order;
@@ -83,6 +84,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/verify-otp', [RegistrationController::class, 'verify'])->name('verify.submit');
     Route::post('/resend-otp', [RegistrationController::class, 'resend'])->name('verify.resend');
 
+    // FIXED: Global Booking Store Route (Accessible to all authenticated users)
+    Route::post('/bookings/store', [BookingController::class, 'store'])->name('bookings.store');
+   
+
+    // ADD THIS LINE FOR THE DELETE BUTTON
+    Route::delete('/bookings/{id}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+
     Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
     Route::post('/api/agent/toggle-status', [OrderController::class, 'updateStatus'])->name('agent.toggle-status');
     
@@ -116,6 +124,9 @@ Route::middleware(['auth'])->group(function () {
         
         Route::get('/reservations', [AdminController::class, 'viewReservations'])->name('reservations.index');
         Route::patch('/reservations/{id}/confirm', [AdminController::class, 'confirmReservation'])->name('reservations.confirm');
+
+        Route::get('/table-bookings', [BookingController::class, 'adminIndex'])->name('bookings.index');
+        Route::patch('/table-bookings/{id}/status', [BookingController::class, 'updateStatus'])->name('bookings.update-status');
     });
 
     /* --- 2. LOGISTICS AGENT SECTION --- */
@@ -132,35 +143,25 @@ Route::middleware(['auth'])->group(function () {
         })->name('dashboard');
     });
 
-      /* --- 3. OWNER SECTION --- */
-Route::middleware(['auth'])->prefix('owner')->name('owner.')->group(function () {
-    Route::get('/dashboard', [OwnerController::class, 'index'])->name('dashboard');
-    Route::patch('/orders/{id}/status', [OwnerController::class, 'updateOrderStatus'])->name('orders.update-status');
-    
-    Route::patch('/profile/update', [OwnerController::class, 'updateProfile'])->name('profile.update');
-});Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
-    // Existing dashboard route...
-    Route::get('/dashboard', [OwnerController::class, 'index'])->name('dashboard');
-    
-    // New Menu Routes
-    Route::resource('menus', MenuController::class);
+    /* --- 3. OWNER SECTION --- */
+    Route::middleware(['auth'])->prefix('owner')->name('owner.')->group(function () {
+        Route::get('/dashboard', [OwnerController::class, 'index'])->name('dashboard');
+        Route::patch('/orders/{id}/status', [OwnerController::class, 'updateOrderStatus'])->name('orders.update-status');
+        Route::patch('/profile/update', [OwnerController::class, 'updateProfile'])->name('profile.update');
+    });
 
-    
-});
+    Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
+        Route::resource('menus', MenuController::class);
+        Route::post('/menu/store', [MenuController::class, 'store'])->name('menu.store');
+    });
 
-Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
-    
-    Route::post('/menu/store', [MenuController::class, 'store'])->name('menu.store');
-});
- 
-Route::middleware(['auth', 'isOwner'])->prefix('owner')->name('owner.')->group(function () {
-    // Gallery Routes
-    Route::post('/restaurants/{restaurant}/gallery', [GalleryController::class, 'store'])->name('gallery.store');
-    Route::delete('/gallery/{gallery}', [GalleryController::class, 'destroy'])->name('gallery.destroy');
+    Route::middleware(['auth', 'isOwner'])->prefix('owner')->name('owner.')->group(function () {
+        Route::post('/restaurants/{restaurant}/gallery', [GalleryController::class, 'store'])->name('gallery.store');
+        Route::delete('/gallery/{gallery}', [GalleryController::class, 'destroy'])->name('gallery.destroy');
+        Route::post('/restaurants/{restaurant}/staff', [StaffController::class, 'store'])->name('staff.store');
+        Route::delete('/staff/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
+    });
 
-    Route::post('/restaurants/{restaurant}/staff', [StaffController::class, 'store'])->name('staff.store');
-    Route::delete('/staff/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
-});
     /* --- 4. CUSTOMER SECTION --- */
     Route::get('/customer/dashboard', function() {
         return view('customer.dashboard');
@@ -184,5 +185,4 @@ Route::post('/orders/add', [OrderController::class, 'store'])->name('orders.add'
 Route::get('/checkout', function() { return view('checkout'); })->name('proceed.page');
 Route::get('/reserve', [ReservationController::class, 'index'])->name('reservations.index');
 
-Route::get('/restaurants/{identifier}', [App\Http\Controllers\Admin\RestaurantController::class, 'showMenu'])
-    ->name('restaurants.show');
+Route::get('/restaurants/{identifier}', [RestaurantController::class, 'showMenu'])->name('restaurants.show');

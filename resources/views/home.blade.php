@@ -15,8 +15,14 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}"> 
 </head>
 <body>@include('components.loader')
-     @include('components.header')
-     @include('components.restaurant-picker', [
+@include('components.header')
+
+@include('components.restaurant-picker', [
+    'restaurants' => \App\Models\Restaurant::all()
+])
+
+{{-- ADD THIS LINE BELOW --}}
+@include('components.booking', [
     'restaurants' => \App\Models\Restaurant::all()
 ])
     
@@ -45,7 +51,7 @@
     </a>
 
     <a href="javascript:void(0)" 
-       @click="$dispatch('open-restaurant-picker')" 
+       @click="$dispatch('open-booking-modal')" 
        class="btn-hero-outline">
        Book a Table
     </a>

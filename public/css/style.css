@@ -3,11 +3,11 @@
    ========================================= */
 :root {
     /* Colors */
-    --primary-blue: #0a192f;         /* Navy */
-    --accent-gold: #C5A059;         /* Yellow Gold */
-    --light-yellow: #fdf5e6;        /* White/Cream */
-    --light-red: #e74c3c;           /* Light Red */
-    --dark-red: #b03a2e;            /* Shadow Red for Ribbon */
+    --primary-blue: #0a192f;         
+    --accent-gold: #C5A059;         
+    --light-yellow: #fdf5e6;        
+    --light-red: #e74c3c;           
+    --dark-red: #b03a2e;           
     
     /* Fonts */
     --font-curvy: 'Great Vibes', cursive;
@@ -16,7 +16,7 @@
     
     /* Effects */
     --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    --border-radius-sm: 4px; /* Requested rectangular rounded corners */
+    --border-radius-sm: 4px; 
     --shadow-soft: 0 10px 30px rgba(0,0,0,0.05);
     --shadow-heavy: 0 15px 40px rgba(0,0,0,0.1);
 }
@@ -231,7 +231,7 @@ body {
 
 .res-card {
     background: white;
-    overflow: hidden; /* Changed from visible to keep it clean */
+    overflow: hidden; 
     box-shadow: var(--shadow-soft);
     transition: var(--transition);
     border: 1px solid rgba(197, 160, 89, 0.1);
@@ -295,7 +295,7 @@ body {
     padding: 10px 20px;
     font-weight: 700;
     font-size: 13px;
-    border-radius: var(--border-radius-sm); /* Standard rectangular rounded corners */
+    border-radius: var(--border-radius-sm); 
     transition: var(--transition);
     box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2);
 }
@@ -654,7 +654,7 @@ body {
 
 .read-more:hover {
     color: var(--light-red);
-    gap: 12px; /* Small slide effect on arrow */
+    gap: 12px; 
 }
 
 /* Responsive */
