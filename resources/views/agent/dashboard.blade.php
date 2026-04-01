@@ -287,25 +287,67 @@
     </main>
 
 <script>
-    function showModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-    window.onclick = function(e) { if(e.target.classList.contains('modal-overlay')) closeModals(); }
-
-    function previewImage(event) {
-        const reader = new FileReader();
-        reader.onload = function() { document.getElementById('profile-preview').src = reader.result; }
-        reader.readAsDataURL(event.target.files[0]);
+    // --- Modal Management ---
+    function showModal(id) { 
+        const modal = document.getElementById(id);
+        if (modal) modal.style.display = 'flex'; 
     }
 
+    function closeModals() { 
+        document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); 
+    }
+
+    window.onclick = function(e) { 
+        if(e.target.classList.contains('modal-overlay')) closeModals(); 
+    }
+
+    // --- Profile Image Preview ---
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() { 
+            const preview = document.getElementById('profile-preview');
+            if (preview) preview.src = reader.result; 
+        }
+        if(event.target.files && event.target.files[0]) {
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    }
+
+    /**
+     * Toggles Agent Availability
+     * Fixed URL path and added detailed error logging
+     */
     async function toggleAvailability(checkbox) {
         const statusText = document.getElementById('status-text');
+        const topBarStatus = document.querySelector('.welcome-text span');
         const originalState = !checkbox.checked; 
         
-        statusText.innerText = checkbox.checked ? 'ONLINE' : 'OFFLINE';
-        statusText.style.color = checkbox.checked ? '#2ecc71' : '#e74c3c';
+        // UI Update Function
+        const updateUI = (isAvailable) => {
+            const label = isAvailable ? 'ONLINE' : 'OFFLINE';
+            const badge = isAvailable ? 'ACTIVE & READY' : 'OFFLINE';
+            const color = isAvailable ? '#2ecc71' : '#e74c3c';
+            const badgeClass = isAvailable ? 'status-green' : 'status-red';
+
+            if (statusText) {
+                statusText.innerText = label;
+                statusText.style.color = color;
+            }
+
+            if (topBarStatus) {
+                topBarStatus.innerText = badge;
+                topBarStatus.className = badgeClass;
+            }
+        };
+
+        // Optimistic update
+        updateUI(checkbox.checked);
         
         try {
-            const response = await fetch('/api/agent/toggle-status', {
+            // Using Blade's route helper is the safest way to get the URL
+            const targetUrl = "{{ route('agent.toggle-status') }}";
+            
+            const response = await fetch(targetUrl, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -315,16 +357,24 @@
                 body: JSON.stringify({ is_available: checkbox.checked })
             });
 
-            if (!response.ok) throw new Error('Server unreachable');
+            if (!response.ok) {
+                // If the response is not 200-299, catch it here
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `Server responded with ${response.status}`);
+            }
+            
             const data = await response.json();
-            console.log("Status Synced:", data.message);
+            console.log("Logistics Sync Successful:", data.message);
 
         } catch (error) {
-            console.error("Logistics Status Sync Failed:", error);
+            // Detailed logging for debugging
+            console.error("Critical Logistics Sync Failure:", error);
+            
+            // Revert UI
             checkbox.checked = originalState;
-            statusText.innerText = originalState ? 'ONLINE' : 'OFFLINE';
-            statusText.style.color = originalState ? '#2ecc71' : '#e74c3c';
-            alert("Connection error: Could not update your availability.");
+            updateUI(originalState);
+            
+            alert("Connection error: " + error.message);
         }
     }
 </script>

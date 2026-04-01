@@ -28,7 +28,6 @@
 </head>
 <body>
 
-    {{-- Include your existing header component --}}
     @include('components.header')
 
     <div class="checkout-wrapper">

@@ -24,13 +24,12 @@
         display: flex;
         align-items: center;
         margin-right: 10px;
-        /* Increased icon size */
         font-size: 1.8rem; 
         line-height: 1;
     }
     
     .icon-fork { 
-        color: #FF69B4; 
+        color: #e74c3c; 
         transform: rotate(0deg); 
         display: inline-block;
         vertical-align: middle;
@@ -46,7 +45,6 @@
         align-items: center;
     }
 
-    /* --- REST OF STYLES --- */
     .avatar-wrapper {
         position: relative;
         display: inline-block;
@@ -73,7 +71,7 @@
     }
 
     .user-name-pink {
-        color: #FF69B4 !important; 
+        color: #e74c3c !important; 
         font-weight: bold;
         font-size: 0.95rem;
         text-shadow: 0 0 8px rgba(255, 105, 180, 0.3);
@@ -115,6 +113,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        /* --light-red: #e74c3c;           
+    --dark-red: #b03a2e; */
     }
     .close-cart-btn {
         background: none;
@@ -127,7 +127,7 @@
     .cart-footer { padding: 20px; border-top: 1px solid #eee; background: #f9f9f9; }
     .checkout-btn {
         width: 100%;
-        background: #FF69B4;
+        background: #e74c3c;
         color: white;
         border: none;
         padding: 15px;
@@ -139,7 +139,7 @@
         position: absolute;
         top: -8px;
         right: -8px;
-        background: #FF69B4;
+        background: #e74c3c;
         color: white;
         font-size: 0.7rem;
         padding: 2px 6px;
@@ -181,7 +181,7 @@
                     <ul class="dropdown-list">
                         <li><a href="{{ route('restaurants') }}"><i class="fas fa-store"></i> Restaurants</a></li>
                         <li><a href="{{ route('restaurants') }}"><i class="fas fa-store"></i> Blog</a></li>
-                        <li><a href="#"><i class="fas fa-fire"></i> Hot Deals</a></li>
+                        <!-- <li><a href="#"><i class="fas fa-fire"></i> Hot Deals</a></li> -->
                     </ul>
                 </div>
             </li>
@@ -202,7 +202,7 @@
         @auth
             <div class="user-meta d-none d-lg-flex flex-column text-right" style="line-height: 1.2; margin-right: 15px; text-align: right;">
                 <span class="user-name-pink">{{ Auth::user()->name }}</span>
-                <small class="role-badge">{{ str_replace('_', ' ', Auth::user()->role) }}</small>
+                <small class="role-badge">{{ str_replace('_', ' ', Auth::user()->role) }}</small> 
             </div>
 
             <a href="{{ route('reverify') }}" class="user-profile-link" title="Re-authenticate to Access Dashboard">

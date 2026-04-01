@@ -1,117 +1,155 @@
+
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>About FoodieBert</title>
-
-<link rel="stylesheet" href="{{ asset('css/about.css') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodieBert | About Us </title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}"> 
 </head>
-
-<body>
-@include('components.loader')
+<body>@include('components.loader')
 @include('components.header')
 
-<main>
+<main class="about-page">
+    <section class="hero-section about-hero-sub">
+        <div class="hero-overlay"></div>
+        <div class="hero-container">
+            <div class="hero-content">
+                <span class="hero-subtitle">Our Journey & Vision</span>
+                <h1 class="hero-title">
+                    The Pulse of <br>
+                    <span class="text-cursive">Bertoua's</span> 
+                    <span class="text-highlight">Cuisine</span>
+                </h1>
+                <p class="hero-description">
+                    From local street food to fine dining, we are digitizing the flavors of the East Region, one plate at a time.
+                </p>
+            </div>
+        </div>
+    </section>
 
-<!-- HERO -->
-<section class="about-hero">
-<div class="container">
+    <section class="why-choose-us" style="background: #fff;">
+        <div class="container">
+            <div class="section-top">
+                <div class="title-group">
+                    <span class="text-cursive" style="color: var(--light-red); font-size: 32px;">What We Do</span>
+                    <h2 class="section-title">Our <span class="text-highlight">Services</span></h2>
+                </div>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-truck"></i></div>
+                    <h3>Fast Delivery</h3>
+                    <p>Heat-lock technology ensuring your meal arrives as fresh as it left the kitchen.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-utensils"></i></div>
+                    <h3>Table Booking</h3>
+                    <p>Skip the queue. Reserve your favorite spot at any Bertoua restaurant in seconds.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-concierge-bell"></i></div>
+                    <h3>Premium Catering</h3>
+                    <p>Professional food services for your corporate events and private celebrations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Business Support</h3>
+                    <p>We provide local restaurants with data tools to grow their brand and reach.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<h1>About <span>FoodieBert</span></h1>
-<p>Connecting restaurants, customers and delivery drivers in Bertoua through smart digital solutions.</p>
+    <section class="popular-foods" style="padding: 60px 0;">
+        <div class="container">
+            <div class="section-top">
+                <h2 class="section-title">Signature <span class="text-highlight">Plates</span></h2>
+            </div>
+            <div class="restaurant-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                @foreach(['Kondre', 'Grilled Fish', 'Ndole'] as $dish)
+                <div class="gallery-card-mini">
+                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80" alt="{{ $dish }}">
+                    <div class="gallery-mini-overlay">
+                        <span class="price-tag">From 2,500 FCFA</span>
+                        <h4>{{ $dish }}</h4>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
 
-</div>
-</section>
+    <section class="portal-section dark-theme">
+        <div class="container">
+            <div class="section-top">
+                <div class="title-group">
+                    <h2 class="section-title" style="color:white;">The <span class="text-highlight">Team</span></h2>
+                </div>
+            </div>
+            <div class="swiper teamSwiper">
+                <div class="swiper-wrapper">
+                    @foreach([['name'=>'Bertin N.', 'role'=>'CEO'], ['name'=>'Sarah M.', 'role'=>'COO'], ['name'=>'Paul K.', 'role'=>'CTO']] as $member)
+                    <div class="swiper-slide">
+                        <div class="team-card-small">
+                            <div class="team-img-small">
+                                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80" alt="">
+                            </div>
+                            <div class="team-meta">
+                                <h4>{{ $member['name'] }}</h4>
+                                <span>{{ $member['role'] }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+    </section>
 
-
-<!-- STORY -->
-<section class="about-story">
-
-<div class="container about-grid">
-
-<div class="about-image">
-<img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJQA9gMBIgACEQEDEQH/xAAcAAACAgMBAQAAAAAAAAAAAAAFBgMEAAIHAQj/xABBEAABAwMCAwUFBgUCBAcAAAABAgMEAAUREiEGMUETIlFhcQcUMoGRI0JSobHBFWJy0eEzgiRTovAWFzRDc4OS/8QAGgEAAwEBAQEAAAAAAAAAAAAAAQIDBAUABv/EACURAAMAAgICAgMBAAMAAAAAAAABAgMREiEEMUFREyIyYSNCcf/aAAwDAQACEQMRAD8A5EHHVnZs5rcIfV/7Y+tVMSPuqWavQbPepIK48GS6nxA2qz4oTs8EWRkEKQk+tGIjzzbQS6ppfnmtmuDuKpKQW7Q8B4rIH71bZ9nPFjnOElPqulbn7A9srFSiCQ62PnUerAyqWgUUPsw4kCSpxlGPAL3qszwRKMgMPqLSifvUvKPsHEqoksp+KaPkalbuENpYV74s+OKaI/sgeeSCbg2kHwOauI9jCDs9dkgeSam3jfyFIUnL3alD7RS3D5mgEpy2uywpkuoST8Odq6qj2OWxH+veCfRIFaTPZbY47JUi55UBnvlOKRfjXobZzUmGysIMVxYPwnVzNWm0tc028f7lUxtWazxZqG50tKmEnvaFCmaPw77PCntXJSVKVzCpagfoDStp+hlRzzVpGfc2E/1KorZbNeb32irXb47iWxusYCfTJ6+VdNtXBvBktgSIUFiS0FYz2ilAkfOmsJbhx0Mw0NMtoGEIQnCUjyA5U0wmNyZx9ngTi11JzHhM4O6FrGfljIpcu0a6WmSqPdHVRXAcDU3sfQ8j8q+hO20jKuZ6eFauIbciLalJbfbWMFteCF+WDtTfilnlbPnAuub5nObeCK9U5nIVKkqyeldH4x4DRGhGfYEqShtOp2H8R26ozv8AKubpfyUlLi1fKp1DQys2aTqI7MTXD5BRq3IhzJxTqtk9WBgaWVD9qYuHeM2bQo67cHAU4JGM0wn2rRkju2lY/wB4qXY3J/COeN8NXFae7Y5qvDKTUqeEb2od3h+RtuMkD96d1+1z8FrBHm7VdftdkgfZ2xkern+KfsHKhVHBPESz3LEUgHbUtNV5vB/EENGt+1oSjVnY5pod9rl0I7sOKPVRNB7r7SrvcEFtYjNpP4Qadcybb+RRuESVFQVPNNtgq6itbBbX7ze4cBBbJkOhJIHJI5n6Vtcry/N7khaFDOwxUdnmvxZKn4pDS0JI1oGCAeeKulXHbAu2FfaA+ym9LgxF6mIaQ2kjkVdf+/KgdmidvI1q3CRkCoZKlPSCTkqJJJ8c0SgOtQ2lrcIBCfh8TR1qNIoeXd1DCABjtDyoHgrVvv41I+6qU+txZ7yv+kVr8OMdKeVpCvs9CegOMVlRKOTzrKJ7ZYRKWjdJ5Uet3Gl7tbaRFmdwfdWkKApZDTn4T9KmZZdGQWyQemKo5TIdDs17VOKXBpRIj7eDH+al/wDMbi1Y2nIH9LCaUrTFWpxWE930o81B6EVGolfB50i2rjfix0EG5OjP4UJH7VUduFzlpU5JmPqcHXNWW4A8/pUnummo1r6PIoCVc0JSGbhMGef2yhXpfuaj3p8k+ryqImKNtq2EcDpScggkplL+OS6fVxRrz3ZwganCfUmi/YgVH2O1LyCgX7lnmr8q9RAA6+u3SiYZr0td0k7YFB2No6l7LY78XhYBQyHXlLayPu/9inHQ22nU7pAHNSjgCl+DIb4f4RjOO6V9lHR2ac41KVyGenj6A0lOXZmZNW+9NZnzFbnB7rY8EpOwA8efjTXmUIviwvJ6OrJU24g47NaPxA5H1qB2OEoWWcctgenpXHpt9ZiTUKhKkNzc7GIdKj69CPIjHlXQeE+JV3Ue7TNHvQGQoJ06vIjkDRxZ1k9rQ1+PUdhtl9DxDfabDc6uZ+dcT42tiLbxPPZabSlla+1bSNgEq3wPnkfKuxPoLUvLaR3t9xyPnXOvae807eIrKVAuNR8rUOuTsPyoXe00euOKTQiFG3KtSjbcD6Vc0jFe6BipbJ7B4Y2+EfSvPd+eAB8qJhAxyr3sxg7V7mwbBC2D5fShkvKVEAflTKtsGhMmP9qtW2DypvyuQylTK7NpD0ZDpdUCrpjlXnYIio7LUVE7kmjsdoNw2kq6DNDm4qJr8sgq1NISQc88k/2q822uwKdMFBKlOqKcY9M1C+264tIOOeMhOwq0paWNTYaSVasb5ohaUNvdoZbbaQN9QJSEjz3qrrS2HWwRJjhjCW1hY6keNU1gjnkeoq/cZzXbaYSEltO2oj4qpqkLXgEI+SaZP5A9eiEEdayrLzHYI1c8qxuKymF0OqISfwD6VOmCj/lj6UWRH8qmSxtyqjMCE+6TEWl5tlLHxjVmprPdUTXSlaNKsVHx0xhcRwJPUZoFZlqanJwdyaj8F2lpHQm2xpyBXpaz0qeMjLQPlUpRUKGRUEZaxlKM14Yrv4DRqA39ko1KtvHKk4hF33Rz8BqJxlSB3kkb4pjCUdc0Nuae56KpHIQYEbV7oGKlCe7WyU6k5AOKmxg//EXrlwsmIlQXKiuJLaFKwVpAOP7Us2mLcLze2i5bEREtn7d5AI1+W4H70RgSfcVe9pALjecBQ2NbMcT3GcJUiLIjIdZWEpbd2BHUg9D061Kqe2tHQ8ZbhdmXjhq4x5zrlkeAePJKgknHlnarVitdzs8f364uL96Cwod9JCcctgNvqaBO3u4TVuOXeUlMZHeDLa8HPmoY/aq8K8vvLCe1cW0r4dSs5FedVK0bYxq69naJDyJMeNISkKQ4nWMnYZGTk1x3iiebjxBMeGFISstoKRsUp2GKIXzix90xbFCdCW24w94I5kk/Dnpt+tCkJSEnAAwK0afs5meu1C+CslpakakoNSojrKcqGB41dbHcFbvZ7Agddqk97JJIFuyITD4juvkOYzgCpm3Levb3o5/pr1vh+dNuiZLEN1YAAJ07VeXEEGX2UpkNOZ2SsYP+aNrXoMymVexgY/8AUrP+2hN0iwQ42BLWFLOACKaW1srVnW0B8qVuLGX5N0huR0JLSOqfGhjXKtMppStouTmRHgFal9xtOAfE0M4aBV7+pXNWjHnuatYVIu6Y7pKmQ3nSeWagsGptVxSv4QtIT5DvVplakRAWY3okvLAK1FZwOlR2uC/d5RYS4rH3kpGSflVv3F952S8pZS2FK0jxp59l8MMMy3CkFZ04VjenvJxh6GUbaQl8V2JVjZiFbSW+1zhOrUrbqo0uMjU8geKhXQvbCrMi3p/lUf0pFtkdyRNaQyhSlZziqYm3G2TyJKtFy77NoGOSqyrl0tk1xQHu6uZ61lMqX2ec7OkoR5VOhAxvScblJbP2kgg/zVYYucpz4HNQ8RW14X9nEXkL6GCfbo8xDYkN9oBy1dKW5nDrbM4PMIIAPwiryp7+wU4rPpWwlSeZWceYqVYm17KznX0E4KcsgYIIHWpy33BQYTJA+/8AlWq50rTssnHgKg8L+y6zL6GqCjDKq3UnJpegcQiNGAkNOKUVdK0uXGUWGwFraXlR2HjU6nXRWbT9B0jSd6HXUAtpIGO9S+zx/DeOFx3kqra5cRtSop91QoKHjypHFDN/ZeCTjaiERbaYyUrHeWDSNH4gllOFp35jFTi6T3sFDgT05Un4KYOaQ0FH/DqSpSdLpIOegodBgttyVLQ0kyEHLa9xqA6HFCHJNwUwltSh3DzFNPDVquc6y3CYWHFFpCBG2wHFau9jxwB+dSvBaW0zV4/kKa00UJqHZIUh+K2yzr1KByc+O6iTVID/AIjWshtJOE7foKrzLi82S12YDqdlat8Y8jVKEuTOuCGmkOSJKlABKRk89tqlOOn7OzOSYWyO2qd/iD7ktpTbjjhUkqSQFDPQnnijzS0rGAeddAPBfvfDa48vs1XMJLjCs7MrA2Tnz5H18q5RLNxtL+iUw5Hf6tPIwR8q3PHtHByUuQ5cOWxd4lJjIcDeBqUojO1PcLh2BCCQGu2cHNbm/wCXSuccMW7jB95EuCGoSf8AnPjGR/T1p/evT8QIiyZsb3kJHaKCdOT6VBrj7K45eR6QfSpLY72hAHMAj9KTPaPcbeYTEb3YPzFnUhWN20+NGWnoQbD8qWhSjvsquf8AtElKkTmpkNDhjNt6FOAbas0nN2+JrvAseN0tsGKkNKbCExClZ66eRqOPAdmqVghAa3OsYJ9KCquUhCQUub+PWoFXicrI7ZRz5068fJ72Y1lT9h+O+2q4LShOS0DkjkKp2ppxTVxeWQE9skD86pNCfCjoU2trXIXtkb/OpXYVwS6ptTK1KQkKIbOrY8v0pknL02aHL47SJXVK93WgackYG9H+FL2za2XG1p1KXp5chilI6uS0rQf5qu2xvtV+ho3C4vYMbptbGziK0tX6SzIkK7qE4SB51Si2CJaHFSG8nu70TakBMdtKugqCbIDkZaR1FRjJW+JryYJ47A8y/RO2I7JW3jXtLEw4fV61la+CZh0HWgxdGGpEptCnFp5p2rEz2bRIDTbCS2vdRJ3reIgusMtrHY6E6cpPOsftbkkao7a3FA4ycEmtCyd9s5jxo2lXsupUqO20kcwDzNbQeJHykJfhoJH3qjcst0ACk22SrA6N1keNcGzpftEvT/8AEaLyyKsVF+VenmgkojRzr/EqtP4xLKcqhRDt0c/xVWVFZk9mJMSUyU7btK/tXqrVb1owl9xIB6pIxWesy2XnF12WIN497XpXDabwrSSDkVWu9gjXFD8h6aGC38CB1qlGjRYMspcmgx85JB3omtm2So+uPJWEE7FR50lZJ2mFS16ER+O3GfSlD+R46auM3FKozsdxsYA2Wnmd6MyLDGkLSTIyB4Gt2uGY7eSl1Q9aas8aGSW+wUu7R1BCewyEjmB5Ux8LcO3viWOXbdADUcKx7285obO/T7yvkKIcF+z+Ndb2lbzilwo5DkhPRf4U/MjfFduZbZabS1HaS02gYSlIwAPDFeVpraGqYfoWeHeBbba2AZqROl43cdT3E/0p8PWmNaQlnsm0pQlKcJCRgCrA5VoUZ514KWjlntC4Vcl3GNOt0R5bjuW5KWU5ztkKOPpRngXh82a2NkRlJmPkqeUtOk/05PIYp1XH1eVetR9PM0FPeyrytzxPI7fYo3xnritZcCDOKDLjNPLb3bUtIJT6Gp1JqJRdGyQM8hVdkdbIzABACHSBywR0pG45aEJ5mW4AG0khw6foae1PPNtqU9pGB92qdxgs3eD2TzKV6hjBGRWfLE0ujX47cUqZyA3aG7NQ2xLWlJ5gJ2J8M0fTbBPtr0VewcRhR6hVUI/DtqjXVXuqFFTRydWcA+VM8NIS4EA5zvXO0lX6neyPlHFnKzwtOSpScg6VEZzVC6Wt63YTJITq3G9dB43cdtGh5pvLbp7x8K55fri5cdKljToHKt+HJlr36PnsuOYvig5w2x76mKypsOBsLVvzzVrgmNKuT10UtepxLoT3ldBnah/C09URxLqV8kkBOOnWjnBMlpSp0iGSlJdGvPVW5P6is90/2Os8epjT7Dv/AIZfeGHm28fzYqlJ4ZlRFqUww0UEZyDijXv72Mhf/TQ+6S5MpKUqdXhPMDasqeQfjt+iD+FPuxkqLTjZI6lJH5GhL8R5CloByK6pwsliXw0lTy2i6hGkqWgDScdfGucvvuvXVcVJG75QMJxtnpVE6T2BX+Tc6EqZbJQfUdIOd6ynuRZpCXCC3LGPFJP7V7WleSzM8MCGi1XRJyHxmr0KPxIy6Pd3koA3CyrNWgtQ+I4q81N0gDY7c62NbOOn2XYVx4wSAky4mw2JTUkziLi2C1rKYcg5xpb3P0quiedPQ1o7KSo6sYPlScRk0EGOJeJ1sF2RAglAGSdfL1oJcrxdbitCWralaycK0Db61TuNzcNquqmnC2tBQU45g5r3hS93GVDUqRcnlKSsgfDt+VBx8h2mE4jVxZILthcWOuUg0RE3SnQrhx4DqEsE71D/ABmeNvf3MfzBNTNXm6dmoty0HAzlaBUXjQV7NFXO3oIDljeaJ8WiK0eutodGhyG4nHTTU1rFzu7y3PewVIGcLGyvQURXbpTZbS4lK1EaijsxnT41jqknossbYR9mkyMv+KswkFKAttQzz3B/tTshR1+HrSlwpbJECfPkrjKZQ8lrQVY7+NWTt03FNSSXHTpIOMZxXRxfwiNLTLoG1Zis6CtsiqimleitsCtTXjx4eWa0zhB251ufhwK1X1Khy2pjyB01xSYi89SB+dbB4tMZSSCdhUVzP2CRjmoV6tBKB1Cd6yZaap6OjhhOVsXJdwtsGK6+4ppA3Uonp40t8K8VQ73fpLDawg5CWAfvpFC/ajIRGZkwGhhTjucAdDg/vSbw1FXHmJl50rbwUb4OfSpRM8XTNOfNU9T6+TvN5jWyTAXGuS2ylwYAPMHxrgl6hGFJkMLOUJXgK8R0NOsq8vSZCHngc5GVJPKjyG7RcGVofSw827pGVYBPzqa8j8df4eXiLPKafZz+wpadwy2rtFNpKiccximjgBLBhSuyCVjtcK2xg7/4qrGs7UHiKbEgaVNlnKe9nAPStLVFl2yM9GUy4h1lZVIyRtqxpI+RFJd8lWjoqNOdr7HR2PIUMsNpA8jQ+4ofhx1uSHQkhPdT1WTsAB1yf3oSi6PoAw6rbzq2x/E7ooLQ01MShSSWi4ELSRnB9NzUI99splxVU/roa7ZblG1qU65pU6jLmOvUc/X8qTpUNyVfVoWE6klskEadYKwnbzGRTKuTxCoKcVYnEoDeM9s3p2G3UYFL0FT8mS4tSNL7hCSouFQzkHb5dfSm9NmRRcr43/jTOr25pbbCgUuL72xV+1e0kS5lwhMNoQ+TnfUl08ulZVJudGGvGqm3s5AuRLAOpsnFeN3J1sgLjOGikciUg+7nUpZOErGD9KiPaN3ByGnC3WjhaUd7Fdfmjj6Zo1fGEj7Rl0fKpxfLa4kpU6pJPQpo9AtzzicustpH8+KIN2GM+QgsMPKPJCWwc1F5p36GUi5AmyXvsWVIciK20qbBB/KmOHHaab0iHFTn8LQH6UzWbgx5hsJW1GjN5yEhOVflR1vhqEP9TtF/PTQadehlpCIYkVY70Vv5ZFafw+DgoLZSFbbOcq6CuzWWKkLdjoCfxOLOP1oTeo7zalG126GYQZwt8aQvJ8DgnbFQvIo6b7HfS5aFBPDESItJbXLbxyUlzY+lXF25OUuCXJCkjG5zt4UY4Yanyig3dOqEtJDbUokO6th3Rtt9KOP8O295QbZkLZcIyG9QPrgHelxccns8+1tIHW+SYFqaaQ0XlFOVuHbGeQ+lXbfdkqCG206QT3s881PdbWXW0mInVoaCCkdR0pf4cjrcuMmJKGh2NhaUL2155HzxWrtdA0tDkJCSNJ3UACd60MjT8JxVP3F5sFWTlX4d6gVHkHmTTdgSTCCpuASs4FQi5KWoJaGSTVL3Vz75NWI6EsknbPSvbYdJF9DihzO9avy20IUVr+QqEuhAGdyRUUiO04FElWHBqIA39a9VNLofFEuv2BK7mHXFBXIcvKsjXE9sdSu6elL9zIt8ya0XMpQpPeV3eYzjJrWI8gj7ZwIWTsgEEgdOVc2rfLv2dabwp8NlvjQMxJUSc40FdoC3q055ZI/LNK67xw/cVJYlrbZcLmzxTj86ephEqxvtupK09kVA+YGQRSHDjxXV6HGUq8iK9uX7HUtJodLe9AkslqIxEU2BhLjakqqNrh6M2pYlJTIYUchtTYOmll+wWlJ1KipGR8SRjFSMWC3qP2bslPo+sD9aTJ+Mp46vfTG4We1ojuOQ4TcZ1Kfi+HOKSb2ntZaHk47VTaS54KwSB+Qo1CiQYrbqWC647jBLiyr9aFvsue9PalKJynAzyGOQqfLb6NShynt7BSmiEg48a3ZDrTiXGnOzUOSknBTRBUdRGnTtUbrBSAkDHnXmx5rRet17ukha4D1z7TtE5DTukagByzjJzyogzGgW23KuDz7wdlpC0NkanFnqSB8KTuKFW1FtdK492jpW2rdDuk5QfA+VHWeEI60E2yfLjtu7ktPZSfCqxcpaaMmfDj5cpri//OgfMu5mstlTCsI2JAxv4V7RCTwdMQg67ih7WrJU6yNXLxFe0nQqaf8ANLRziHaI8JwrTIU8s7ZLh3pjhS46W0tGJqI2+xSM0oMrVt3j9aKxXlNjZ1Y9FEVuuG32fNcxwjwG5G57eOD993AH96t2uV/BLh2rS25aMaSeRx5eFKbEsgYJURVwPFSfiqaTljqkzp8G+2+YAlp5CHPwObEf3oj2ngMjxFce7N5w9xJO3IVatsi8RlaWJDoA+LUrAT86o8za0GUPd6YeuCUKjPKbUgkFIOCoVYiRmoMVEdxbrihkqUvKu8aS1cZuRXQh+Y27kbrDYUB88VZZ41jSHA449BccH3sgEfnWN+M6p3vs3PJSlS1pBe5WmTKkokR5WllRBOpIKk7dDz+VE3ezbLKVoUpe2HgTnP7UvK41htgdouKAOWMH9DQ6X7TorKVe7sLcUOqWyR+Zpp8ak9p9nqzOkk10jobUlLiRqzqO2CKguDUNxntZyUBDXeDyzjs/nXIJ/tXu0haU29hDCXNi4pIJHypP4xvVxuZb99nSHxjdCnDpG/4eVdPEnrjRitJdneLVxJFU/wBguUHmljUw+D8Y8KYW3mXUhSFpI8R1r5UtHEVxtTzKmHQ40xnSy7kpwenOnvh32r+7O6LpGc7AnYoOrQPyJqjhoTaZ3FQZPMj51oppkELCRtSIrjbhmeG3UXxloDBCHFFJPqDTZAuEC8xS9apjMhocyysHFL2F60Xn5LTDWtwhKCQM9M1XcuzbaQptKnSQTgbdKGTFSoqlK30E7JAyFDzzUCLhHWVJcZa1EYOe7nHkNqhmeRrUDRx/7Fa7TWJkAe9xy+y+lWtBIVp25A+PPHpSNdGErLc2zvvyo6hpOVpJAA6eYHSn1hi0xy8qMyWe1ThSU95J+VQiHGbUewmpbStWXAIyUle2OacY9a5dYMye32zdNYn00ErDCt821I7NlUR2SzlxkOkEZG50nIB36UOk8DdmtTkCUF+CXBg/UVZtSoVseHZvqdSAcam+8CeePWiQ4iiKcDIDoVyGsY3rdi4VGr6YKeaa/wCP0c6uZkRH1xpbDrS0c0kfp41RRPW0AE53OfSugcTWybd0pfgGK5oRgMuI3+Ss71z2Y45FkrYlW9DbyDhaTlOKzZsTT/w6PiZl8+wpb5ZS0dwST1q3HaVKW682nOV48thQVmQC2Ve7JSgDO6/8Uy8ISEvWkOpbwlS1HA36ms6nRvy30jz3VRBC26geigDdJpmT2atlIIrV1pkj7p9aDILIKS4wXnu/UVWaclwl6oj7rON/s1EZ+XWmh6KlXLTVVcBsg4WkHlzoKinJNASVxFejHT2kjX3yAotpz+lZVS4oDL6myQRnO1ZW+JTlM5+TJxppCg0T+BVEYrbjikpJQ0D1Nbt2x3Hwk5/Dv+lbSH4lvQn3h/SSNkAZUfkP3rVbfwjgKGw5Ct0BvvTZmofhRneiTkuxw2gtuGAB999wpH0zk1z832S+sot8fQB98nUv+yfzoPNuiw4ouOKec+8pSshP+aT8N17ZoiIX9HQZfFwbBRBjt4JxrKdKfkOZ+ZpZu9+kqlJivlxchZGlsjSlOeW1KL9wfWtBXuEnUkcq3mypl0fVOkFJUMJKxsBVZ8fXsd5ZX8I7NbLJAZjIU+0l51Se8pZzj06YoTxLabAYEtyJEjqktIyCjHd8zXNxfLytjsBPeMdOAQVbbUzscRW1vhyWhLrnvclOOxS33UYGNh4eZqLwXFb2I7dvsU/eZIjJ2bx+LrWrcmWRhL+AehOc1TCXMAHUU1KkOHSGWdJ/ENzW9SkSTYTaS8yGN0ICx94bnfpUPETjSpoQychCQDjxqO6JeaMUuLyrRkd7OKoLUVHJ5+PjRmfkFP4Naw1qayqbEMq9a7rcbPITItUx6K6N9TasZ9RyNUc17mg1sJ0+y+2W7MBLV5gx56NsuI+yX8+aSfkKaYntG4Muyk++NyILqtsuN8v9ydq4NUjfOpVCHhbPo1hiw3JANtvrRJ3H2gNSq4ZkK/0bi0oeZIrjfAkBKrmm4Po1oZOEeauv0rot9mJeU2GQpsJG5GxNc/Nkmb46NuFWn+rGNjhuY2Me8Mk+JUanRYHiCHpTeM8+eKToyVLKSp1z/wDRpqYuqWY6GlNIVpHM5yahyhP0abvKl7DkdEWA3hb6DgcyqkbjaS1c7gl1lv8A0m9BcIxr3/QfvRd68tYIEZvGKXrhOQ6skNAA9KF53XWhcEfttgpmIS3oVnBNMVugNpYQEAo/pOP0oTHcCnMBIT8qa7e+2hsYQD61npnW21PR61AWfgW+P/sNTO2uVpymQ8PUg/rRaNKaUO6AKuDS+2QpORTTiTRjvybl+hJkQ7kknRJSryW2P2qi4zdgd0xyM8yhQ/enOVairBaOPI1TTCkIXgkYpPxNM0T5E0jnl7jPMPB18AOLxkDlWVc9pFwTbn46VNZUrPKsroRL4rRiup5PZzmHlKhoUpGVDIQcZ+lWOHLczdLsWJRXo3USk4JwfGsrK33/ACzjSX+OFi2MMW6A0hhhwkrKAQpXqaS2EhxYCuQB29K9rKXCv1D8kC1lasqqWInW8lJzjOaysqgJ9nsp1TilI2ShJwEp2AqFKigZScZr2so/APkngoD0hCFEhJPQ1K6tbbhQ2opBznHWsrKZnpMuOwY80b1RrKyjPoFHle9KysoinlZWVlAJ6K3RzFZWUGUx+x84HURHUByCyaNypr3vBHd5+FZWVyMi/wCRnUxhSCdSUqPOrry1DGDivKyo0PRXW4rByc0OcUVL3r2sryLYyeKBqUfOmaChPYp2r2sqF+zcvQTYz3Tk8+VEmVEDbY+NZWU+IwZyOQ84B8Z59arNvLK9zWVlO/YsJaOT+1l1a7nHCjsEmsrKyuli/hGbJ/TP/9k=">
-</div>
-
-<div class="about-text">
-
-<h2>Our Story</h2>
-
-<p>
-FoodieBert was created in Bertoua with the goal of helping local restaurants manage orders and reach more customers using modern technology.
-</p>
-
-<p>
-Our platform allows customers to discover restaurants, place orders easily and get food delivered quickly.
-</p>
-
-<p>
-At the same time, we help restaurant owners grow their businesses and drivers earn sustainable income.
-</p>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- VALUES -->
-<section class="about-values">
-
-<div class="container">
-
-<h2 class="section-title">Our Values</h2>
-
-<div class="values-grid">
-
-<div class="value-card">
-<i class="fas fa-handshake"></i>
-<h3>Community</h3>
-<p>Supporting local restaurants and businesses.</p>
-</div>
-
-<div class="value-card">
-<i class="fas fa-shield-alt"></i>
-<h3>Trust</h3>
-<p>Transparent services for customers and partners.</p>
-</div>
-
-<div class="value-card">
-<i class="fas fa-rocket"></i>
-<h3>Innovation</h3>
-<p>Improving restaurant technology every day.</p>
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- CTA -->
-<section class="about-cta">
-
-<div class="container">
-
-<h2>Join the FoodieBert Network</h2>
-
-<a href="{{ route('register') }}" class="btn-primary">Register Now</a>
-
-</div>
-
-</section>
-
+    <section class="contact-footer">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h3>Get in Touch</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Bertoua, East Region, Cameroon</p>
+                    <p><i class="fas fa-phone"></i> +237 683 067 844</p>
+                    <p><i class="fas fa-envelope"></i> contactfoodiebert@gmail.com</p>
+                </div>
+                <div class="contact-social">
+                    <h3>Follow Us</h3>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
 
-@include('components.footer')
 
+@include('components.footer')
+    <script src="{{ asset('js/script.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script>
+    new Swiper(".teamSwiper", {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        pagination: { el: ".swiper-pagination", clickable: true },
+        breakpoints: { 768: { slidesPerView: 3 } }
+    });
+</script>
 </body>
 </html>

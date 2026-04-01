@@ -3,185 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cravings | FoodieBert</title>
+    <title>FoodieBert | My Culinary Journey</title>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('css/Alldashboards.css') }}">
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="{{ asset('css/dashboards.css') }}">
     <style>
-        [x-cloak] { display: none !important; }
-        
-        /* GRAND OVERLAY */
-        .modal-full-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 9999; overflow-y: auto; padding: 60px; animation: slideIn 0.5s ease-out; }
-        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        
-        .details-card { background: #fff; border-radius: 30px; padding: 60px; border-left: 10px solid #D4AF37; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
-        .label-caps { color: #D4AF37; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; font-size: 0.8rem; display:block; margin-bottom: 10px; }
-        
-        /* TABS & NAVIGATION */
-        .nav-item { cursor: pointer; transition: 0.3s; padding: 15px 20px; display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.7); text-decoration: none; border-radius: 10px; margin-bottom: 5px; }
-        .nav-item:hover, .nav-item.active { background: rgba(212, 175, 55, 0.1); color: #D4AF37; }
-        
-        /* REWARDS BAR */
-        .progress-container { background: rgba(0,0,0,0.05); height: 10px; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        .progress-fill { background: linear-gradient(90deg, #001f3f, #D4AF37); height: 100%; transition: 1s ease-in-out; }
+        :root {
+            --emerald: #0a192f;
+            --gold: #D4AF37;
+            --soft-gold: rgba(212, 175, 55, 0.2);
+        }
 
-        .favorite-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        .fav-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #eee; transition: 0.3s; }
-        .fav-card:hover { transform: translateY(-10px); border-color: #D4AF37; }
+        .modal-overlay { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .profile-img:hover { filter: brightness(0.8); cursor: pointer; border-color: var(--gold); }
+        
+        /* Reward Card */
+        .reward-card {
+            background: linear-gradient(135deg, var(--emerald) 0%, #004d40 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            border-bottom: 4px solid var(--gold);
+            position: relative;
+            overflow: hidden;
+        }
+        .reward-card::after {
+            content: '\f0d0';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 8rem;
+            opacity: 0.1;
+            color: var(--gold);
+        }
 
-        .status-badge { padding: 6px 16px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-        .bg-pending { background: #fff3cd; color: #856404; }
-        .bg-confirmed { background: #d4edda; color: #155724; }
-        .bg-cancelled { background: #f8d7da; color: #721c24; }
-        .bg-completed { background: #e2e8f0; color: #475569; }
+        /* Loyalty Points */
+        .points-badge {
+            background: var(--gold);
+            color: var(--emerald);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        /* Status Badges */
+        .badge { padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-confirmed { background: #d4edda; color: #155724; }
+        .badge-completed { background: #e0f2fe; color: #075985; }
+        .badge-cancelled { background: #f8d7da; color: #721c24; }
+
+        .btn-review { background: var(--emerald); color: var(--gold); border: 1px solid var(--gold); padding: 8px 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: 600; }
+        .btn-review:hover { background: var(--gold); color: var(--emerald); }
+
+        /* Recommendation Alert */
+        .rec-alert { background: #fff9db; border-left: 5px solid var(--gold); padding: 15px; margin-bottom: 20px; border-radius: 8px; display: flex; align-items: center; gap: 15px; }
     </style>
 </head>
-<body x-data="{ 
-    activeTab: 'reservations', 
-    showDetails: false, 
-    selectedBooking: {} 
-}">
 
-    <template x-if="showDetails">
-        <div class="modal-full-page" x-transition>
-            <button @click="showDetails = false" style="position:fixed; top:40px; right:50px; background:#D4AF37; border:none; padding:15px 30px; border-radius:50px; font-weight:bold; cursor:pointer; z-index:10001;">
-                <i class="fas fa-arrow-left"></i> Return to Dashboard
-            </button>
+<body>
 
-            <div style="max-width: 1000px; margin: 0 auto;">
-                <h1 class="playfair-display" style="color: white; font-size: 3rem; margin-bottom: 30px;">Reservation Confirmation</h1>
-                
-                <div class="details-card">
-                    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 60px;">
-                        <div>
-                            <span class="label-caps">Restaurant</span>
-                            <h2 style="font-size: 2.5rem; color: #001f3f;" x-text="selectedBooking.restaurant_name"></h2>
-                            
-                            <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr;">
-                                <div>
-                                    <span class="label-caps">Date</span>
-                                    <p style="font-size: 1.3rem;" x-text="selectedBooking.date"></p>
-                                </div>
-                                <div>
-                                    <span class="label-caps">Arrival Time</span>
-                                    <p style="font-size: 1.3rem;" x-text="selectedBooking.time"></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="background: #fcfcfc; padding: 30px; border-radius: 20px;">
-                            <span class="label-caps">Guest Count</span>
-                            <p style="font-size: 2rem; font-weight: 600;"><i class="fas fa-users" style="color:#D4AF37;"></i> <span x-text="selectedBooking.guests"></span></p>
-                            
-                            <hr style="margin: 25px 0; border: 0; border-top: 1px solid #eee;">
-                            
-                            <span class="label-caps">Booking Status</span>
-                            <span :class="'status-badge bg-' + selectedBooking.status" x-text="selectedBooking.status"></span>
-                        </div>
+@if(session('success'))
+    <div style="position: fixed; top: 20px; right: 20px; background: var(--emerald); color: var(--gold); padding: 15px 25px; border-radius: 8px; z-index: 20000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-left: 5px solid var(--gold);">
+        <i class="fas fa-magic"></i> {{ session('success') }}
+    </div>
+@endif
+
+<div id="modal-profile" class="modal-overlay">
+    <div style="background: white; padding: 40px; border-radius: 15px; width: 400px; position: relative; text-align: center;">
+        <button onclick="toggleModal('modal-profile')" style="position: absolute; top: 15px; right: 15px; border: none; background: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        <h3 style="font-family: 'Playfair Display'; color: var(--emerald);">Update Profile</h3>
+        <form action="{{ route('customer.profile.update') }}" method="POST" enctype="multipart/form-data">
+            @csrf @method('PATCH')
+            <div style="margin: 20px 0;">
+                <input type="file" name="profile_photo" id="photoInput" hidden>
+                <label for="photoInput" style="cursor: pointer; display: block;">
+                    <div style="width: 100px; height: 100px; border: 2px dashed var(--gold); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-camera fa-2x" style="color: var(--gold);"></i>
                     </div>
-                </div>
+                    <small style="color: #666; display:block; margin-top: 10px;">Click to select photo</small>
+                </label>
             </div>
-        </div>
-    </template>
+            <button type="submit" style="width: 100%; background: var(--emerald); color: var(--gold); padding: 12px; border: none; border-radius: 8px; font-weight: bold; letter-spacing: 1px;">SAVE CHANGES</button>
+        </form>
+    </div>
+</div>
 
-    <aside class="sidebar">
-        <div class="logo-section"><h1>FoodieBert</h1></div>
-        <nav class="flex-grow" style="margin-top: 30px;">
-            <a href="#" @click.prevent="activeTab = 'reservations'" :class="activeTab === 'reservations' ? 'nav-item active' : 'nav-item'"><i class="fas fa-calendar-alt"></i> My Reservations</a>
-            <a href="#" @click.prevent="activeTab = 'history'" :class="activeTab === 'history' ? 'nav-item active' : 'nav-item'"><i class="fas fa-utensils"></i> Dining History</a>
-            <a href="#" @click.prevent="activeTab = 'favorites'" :class="activeTab === 'favorites' ? 'nav-item active' : 'nav-item'"><i class="fas fa-heart"></i> My Favorites</a>
-            <a href="#" @click.prevent="activeTab = 'rewards'" :class="activeTab === 'rewards' ? 'nav-item active' : 'nav-item'"><i class="fas fa-crown"></i> Gourmet Rewards</a>
-        </nav>
-        <form action="{{ route('logout') }}" method="POST">@csrf <button type="submit" class="nav-item logout-button"><i class="fas fa-power-off"></i> Sign Out</button></form>
-    </aside>
+<aside class="sidebar" style="background: var(--emerald);">
+    <div style="padding: 30px; text-align: center; border-bottom: 1px solid rgba(212,175,55,0.2);">
+        <h1 style="font-family: 'Great Vibes'; color: var(--gold); font-size: 2.5rem; margin: 0;">FoodieBert</h1>
+    </div>
+    <nav style="flex-grow: 1; margin-top: 20px;">
+        <a href="{{ route('customer.dashboard') }}" class="nav-item active"><i class="fas fa-heart"></i> My Dashboard</a>
+        <a href="{{ route('restaurants.index') }}" class="nav-item"><i class="fas fa-search"></i> Discover Eateries</a>
+        <a href="#active-bookings" class="nav-item"><i class="fas fa-calendar-alt"></i> My Reservations</a>
+        <a href="#order-history" class="nav-item"><i class="fas fa-history"></i> Order History</a>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="nav-item" style="width:100%; background:none; border:none; text-align:left; cursor:pointer; color: #fff;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </form>
+    </nav>
+</aside>
 
-    <main class="main">
-        <div class="top-bar">
-            <div class="welcome-text">
-                <h2>Bon Appétit, {{ explode(' ', Auth::user()->name)[0] }}!</h2>
-                <small class="muted-small">Track your reservations and loyalty status.</small>
-            </div>
-            <div class="admin-profile"><img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=001f3f&color=D4AF37" class="profile-img"></div>
+<main class="main">
+    <nav class="breadcrumb-nav">
+        <a href="{{ url('/') }}" class="breadcrumb-item"><i class="fas fa-home"></i> Home</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">Owner Dashboard</span>
+    </nav>
+    <div class="top-bar">
+        <div class="welcome-text">
+            <h2 style="font-family: 'Playfair Display';">Welcome Back, {{ explode(' ', Auth::user()->name)[0] }}!</h2>
+            <p style="color: #666; margin: 0;">Ready for your next gourmet experience in Bertoua?</p>
         </div>
 
-        <div class="metrics-grid mt-20">
-            <div class="metric-card" style="grid-column: span 2;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <small class="label-caps">Gourmet Loyalty Tier</small>
-                        <h3>Gold Member <span style="color: #D4AF37;">(1,240 pts)</span></h3>
-                    </div>
-                    <i class="fas fa-award" style="font-size: 2rem; color: #D4AF37;"></i>
-                </div>
-                <div class="progress-container"><div class="progress-fill" style="width: 75%;"></div></div>
-                <small style="opacity: 0.6;">Only 260 points until your next free dessert!</small>
+        <div class="admin-profile" style="display: flex; align-items: center; gap: 15px;">
+            <div style="text-align: right;">
+                <span style="font-weight: 600; color: var(--emerald);">{{ Auth::user()->name }}</span><br>
+                <small style="color: var(--gold); font-weight: bold;">PREMIUM GUEST</small>
             </div>
-            <div class="metric-card">
-                <small class="label-caps">Total Visits</small>
-                <h3>{{ \App\Models\Booking::where('user_id', Auth::id())->where('status', 'confirmed')->count() }}</h3>
+            @php
+                $photoPath = Auth::user()->profile_photo;
+                $photoUrl = $photoPath ? asset($photoPath) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=002b24&color=D4AF37';
+            @endphp
+            <img src="{{ $photoUrl }}" class="profile-img" onclick="toggleModal('modal-profile')" 
+                 style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); padding: 2px;">
+        </div>
+    </div>
+
+    @foreach($activeBookings as $booking)
+        @if($booking->status == 'cancelled' && $booking->recommendation)
+        <div class="rec-alert">
+            <i class="fas fa-lightbulb fa-2x" style="color: var(--gold);"></i>
+            <div>
+                <strong>Message from {{ $booking->restaurant->name }}:</strong><br>
+                "{{ $booking->recommendation }}"
+                <a href="{{ route('restaurants.show', $booking->restaurant_id) }}" style="color: var(--emerald); font-weight: bold; margin-left: 10px;">Book Again <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
+        @endif
+    @endforeach
 
-        <section x-show="activeTab === 'reservations'" class="mt-20">
-            <h3 class="playfair-title">Upcoming Reservations</h3>
-            @php $bookings = \App\Models\Booking::where('user_id', Auth::id())->whereIn('status', ['pending', 'confirmed'])->latest()->get(); @endphp
-            <div class="table-container" style="background: white; border-radius: 20px; padding: 30px; margin-top: 15px;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead><tr style="text-align: left; color: #999; font-size: 0.75rem; border-bottom: 2px solid #f8f9fa;"><th style="padding-bottom: 15px;">ESTABLISHMENT</th><th>DATE & TIME</th><th>STATUS</th><th style="text-align: right;">ACTION</th></tr></thead>
-                    <tbody>
-                        @foreach($bookings as $b)
-                        <tr style="border-bottom: 1px solid #fafafa;">
-                            <td style="padding: 20px 0;"><strong>{{ $b->restaurant->name }}</strong></td>
-                            <td>{{ \Carbon\Carbon::parse($b->date)->format('D, M d') }} @ {{ \Carbon\Carbon::parse($b->time)->format('g:i A') }}</td>
-                            <td><span class="status-badge {{ 'bg-'.$b->status }}">{{ $b->status }}</span></td>
-                            <td style="text-align: right;">
-                                <button @click="selectedBooking = {id:'{{$b->id}}', restaurant_name:'{{$b->restaurant->name}}', date:'{{$b->date}}', time:'{{$b->time}}', guests:'{{$b->guests}}', status:'{{$b->status}}'}; showDetails = true" 
-                                    style="background:#001f3f; color:white; border:none; padding: 8px 18px; border-radius: 8px; cursor:pointer; font-weight: 600;">View Detail</button>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <div class="metrics-grid">
+        <div class="reward-card">
+            <small style="text-transform: uppercase; letter-spacing: 2px;">Loyalty Status</small>
+            <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+                <span class="points-badge">{{ number_format($points) }}</span>
+                <span style="font-size: 0.9rem;">Bertoua Points Available</span>
             </div>
-        </section>
+        </div>
+        <div class="metric-card"><small>Total Visits</small><h3>{{ $totalVisits }}</h3></div>
+        <div class="metric-card"><small>Active Reservations</small><h3>{{ $activeBookings->where('status', 'confirmed')->count() }}</h3></div>
+        <div class="metric-card"><small>Fav. Restaurant</small><h3 style="font-size: 1.2rem; color: var(--emerald);">{{ $favRestaurant ?? 'Explore Now' }}</h3></div>
+    </div>
 
-        <section x-show="activeTab === 'history'" x-cloak class="mt-20">
-            <h3 class="playfair-title">Past Flavors</h3>
-            <div class="table-container" style="background: white; border-radius: 20px; padding: 30px;">
-                @foreach(\App\Models\Booking::where('user_id', Auth::id())->where('status', 'cancelled')->latest()->limit(5)->get() as $h)
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #f9f9f9;">
-                    <div style="display: flex; gap: 20px; align-items: center;">
-                        <div style="width: 50px; height: 50px; background: #f0f0f0; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-check" style="color: #475569;"></i></div>
-                        <div>
-                            <span style="display:block; font-weight: 600; font-size: 1.1rem;">{{ $h->restaurant->name }}</span>
-                            <small style="color: #999;">Visit completed on {{ \Carbon\Carbon::parse($h->date)->format('F d, Y') }}</small>
-                        </div>
-                    </div>
-                    <a href="{{ url('/') }}" style="color: #D4AF37; text-decoration: none; font-weight: 600; font-size: 0.85rem;">Review & Earn Points</a>
-                </div>
+    <div id="active-bookings" class="section-header" style="margin-top: 40px;">
+        <h4 style="font-family: 'Playfair Display'; color: var(--emerald);">
+            <i class="fas fa-calendar-check" style="color: var(--gold);"></i> Upcoming Tables
+        </h4>
+    </div>
+    <div class="data-container">
+        <table>
+            <thead>
+                <tr style="background: var(--emerald); color: var(--gold);">
+                    <th>Restaurant</th>
+                    <th>Date & Time</th>
+                    <th>Guests</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($activeBookings as $book)
+                <tr>
+                    <td><strong>{{ $book->restaurant->name }}</strong></td>
+                    <td>{{ $book->date->format('M d, Y') }} at {{ $book->time }}</td>
+                    <td>{{ $book->guests }} Seats</td>
+                    <td><span class="badge badge-{{ $book->status }}">{{ $book->status }}</span></td>
+                    <td>
+                        @if($book->status == 'pending' || $book->status == 'confirmed')
+                        <form action="{{ route('customer.bookings.cancel', $book->id) }}" method="POST">
+                            @csrf @method('PATCH')
+                            <button type="submit" style="color: #991b1b; background: none; border: none; cursor: pointer; font-size: 0.8rem;" onclick="return confirm('Cancel this booking?')">
+                                <i class="fas fa-times-circle"></i> Cancel
+                            </button>
+                        </form>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="5" style="text-align:center; padding:30px;">No upcoming reservations. <a href="{{ route('restaurants.index') }}" style="color: var(--gold);">Find a table now!</a></td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <div id="order-history" class="section-header" style="margin-top: 40px;">
+        <h4 style="font-family: 'Playfair Display'; color: var(--emerald);">
+            <i class="fas fa-history" style="color: var(--gold);"></i> Past Experiences
+        </h4>
+    </div>
+    <div class="data-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Establishment</th>
+                    <th>Visit Date</th>
+                    <th>Status</th>
+                    <th>Feedback</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($history as $past)
+                <tr>
+                    <td>{{ $past->restaurant->name }}</td>
+                    <td>{{ $past->date->format('d/m/Y') }}</td>
+                    <td><span class="badge badge-{{ $past->status }}">{{ $past->status }}</span></td>
+                    <td>
+                        @if($past->status == 'completed' && !$past->review)
+                            <button class="btn-review" onclick="openReviewModal('{{ $past->id }}', '{{ $past->restaurant->name }}')">
+                                <i class="fas fa-star"></i> Leave Review
+                            </button>
+                        @elseif($past->review)
+                            <span style="color: var(--gold);">
+                                @for($i=0; $i<$past->review->rating; $i++) <i class="fas fa-star"></i> @endfor
+                            </span>
+                        @else
+                            <small style="color: #ccc;">No action</small>
+                        @endif
+                    </td>
+                </tr>
                 @endforeach
-            </div>
-        </section>
+            </tbody>
+        </table>
+    </div>
+</main>
 
-        <section x-show="activeTab === 'favorites'" x-cloak class="mt-20">
-            <h3 class="playfair-title">Your Culinary Favorites</h3>
-            <div class="favorite-grid mt-20">
-                @foreach(\App\Models\Restaurant::limit(4)->get() as $fav)
-                <div class="fav-card">
-                    <div style="height: 160px; background-image: url('{{ asset('storage/'.$fav->image) }}'); background-size: cover; background-position: center;"></div>
-                    <div style="padding: 20px;">
-                        <h4 style="color: #001f3f;">{{ $fav->name }}</h4>
-                        <p style="font-size: 0.8rem; color: #888; margin: 5px 0;">{{ $fav->address ?? 'Downtown Bertoua' }}</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-                            <span style="color: #D4AF37; font-weight: bold;"><i class="fas fa-star"></i> 4.9</span>
-                            <a href="{{ url('/') }}" style="background: #001f3f; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.75rem;">Book Again</a>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </section>
+<script>
+    function toggleModal(id) {
+        const modal = document.getElementById(id);
+        modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'flex' : 'none';
+    }
 
-    </main>
+    // Example function if you decide to add a Review Modal later
+    function openReviewModal(bookingId, name) {
+        alert("Preparing review form for " + name + ". (You can create another modal for this!)");
+    }
+</script>
+
 </body>
 </html>

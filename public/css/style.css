@@ -62,7 +62,7 @@ body {
     width: 100%;
     display: flex;
     align-items: center;
-    background: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');
+    background: url('https://thumbs.dreamstime.com/b/elegant-dining-room-set-tables-beautiful-chandelier-evening-view-elegant-dining-room-set-tables-beautiful-385110449.jpg?w=992');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -825,4 +825,110 @@ body {
         transform: translateY(0);
     }
 }
+
+
+/* About Page Hero Adjustments */
+.about-hero-sub {
+    min-height: 70vh !important;
+    background-image: url('https://thumbs.dreamstime.com/b/elegant-outdoor-wedding-reception-venue-beautifully-decorated-outdoor-wedding-reception-venue-showcased-featuring-draped-395661518.jpg?w=992') !important;
+}
+
+/* Small Gallery Cards */
+.gallery-card-mini {
+    position: relative;
+    height: 300px;
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.gallery-card-mini img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: var(--transition);
+}
+
+.gallery-mini-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 25, 47, 0.9), transparent);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.price-tag {
+    background: var(--light-red);
+    color: #fff;
+    font-size: 10px;
+    padding: 4px 8px;
+    width: fit-content;
+    margin-bottom: 5px;
+}
+
+.gallery-card-mini:hover .gallery-mini-overlay { opacity: 1; }
+.gallery-card-mini:hover img { transform: scale(1.1); }
+
+/* Team Small Cards */
+.team-card-small {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(197, 160, 89, 0.2);
+    border-radius: var(--border-radius-sm);
+    padding: 20px;
+    text-align: center;
+}
+
+.team-img-small {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--accent-gold);
+}
+
+.team-img-small img { width: 100%; height: 100%; object-fit: cover; }
+
+.team-meta h4 { color: var(--accent-gold); margin-bottom: 5px; }
+.team-meta span { color: #fff; font-size: 12px; opacity: 0.7; }
+
+/* Contact Section */
+.contact-footer {
+    padding: 80px 0;
+    background: var(--light-yellow);
+    color: var(--primary-blue);
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+}
+
+.contact-info h3, .contact-social h3 {
+    font-family: var(--font-heading);
+    margin-bottom: 20px;
+}
+
+.contact-info p { margin-bottom: 10px; }
+.contact-info i { color: var(--light-red); margin-right: 10px; }
+
+.social-icons { display: flex; gap: 15px; }
+.social-icons a {
+    width: 40px; height: 40px;
+    background: var(--primary-blue);
+    color: white;
+    display: flex;
+    align-items: center; justify-content: center;
+    border-radius: var(--border-radius-sm);
+    transition: var(--transition);
+}
+
+.social-icons a:hover { background: var(--light-red); transform: translateY(-3px); }
+
+/* Swiper Bullet Fix */
+.swiper-pagination-bullet-active { background: var(--light-red) !important; }
+
 

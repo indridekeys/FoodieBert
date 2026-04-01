@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="{{ asset('css/components.css') }}">
 
 <style>
-    /* --- MATCHING LOGO BOX FROM HEADER --- */
+    
     .footer-logo-box {
         display: inline-flex;
         align-items: center;
@@ -28,13 +28,12 @@
         font-size: 1.1rem;
     }
     
-    /* Standing straight as requested */
-    .footer-logo-box .icon-spoon { color: #C5A059; transform: rotate(0deg); }
-    .footer-logo-box .icon-fork { color: #FF69B4; transform: rotate(0deg); }
+    /* .footer-logo-box .icon-spoon { color: #C5A059; transform: rotate(0deg); } */
+    .footer-logo-box .icon-fork { color: #e74c3c; transform: rotate(0deg); }
 
     .footer-logo-box .logo-text {
-        font-family: 'Great Vibes', cursive; /* Applied Great Vibes */
-        font-size: 1.8rem; /* Increased size because Great Vibes runs small */
+        font-family: 'Great Vibes', cursive; 
+        font-size: 1.8rem; 
         margin: 0;
         line-height: 1;
         white-space: nowrap;
@@ -61,7 +60,7 @@
         <div class="footer-column">
             <a href="{{ route('home') }}" class="footer-logo-box">
                 <div class="crazy-icons-static">
-                    <i class="fas fa-spoon icon-spoon"></i>
+                    <!-- <i class="fas fa-spoon icon-spoon"></i> -->
                     <i class="fas fa-utensils icon-fork"></i>
                 </div>
                 <h1 class="logo-text">

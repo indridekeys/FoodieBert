@@ -30,6 +30,7 @@ class MenuController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'category' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         Menu::create($request->all());

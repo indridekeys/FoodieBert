@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne; // Added this import
 
 class Booking extends Model
 {
@@ -12,16 +13,30 @@ class Booking extends Model
 
     /**
      * The attributes that are mass assignable.
-     * Including user_id and restaurant_id to prevent 'Not Null' or 'Mass Assignment' errors.
      */
     protected $fillable = [
         'user_id',
         'restaurant_id',
         'name',
+        'email',
         'date',
         'time',
         'guests',
         'status',
+    ];
+
+    /**
+     * Default values for attributes.
+     */
+    protected $attributes = [
+        'status' => 'pending',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'date' => 'date',
     ];
 
     /**
@@ -38,5 +53,13 @@ class Booking extends Model
     public function restaurant(): BelongsTo
     {
         return $this->belongsTo(Restaurant::class);
+    }
+
+    /**
+     * Get the review associated with the booking.
+     */
+    public function review(): HasOne
+    {
+        return $this->hasOne(Review::class);
     }
 }

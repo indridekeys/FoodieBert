@@ -21,7 +21,6 @@
     'restaurants' => \App\Models\Restaurant::all()
 ])
 
-{{-- ADD THIS LINE BELOW --}}
 @include('components.booking', [
     'restaurants' => \App\Models\Restaurant::all()
 ])
@@ -59,8 +58,8 @@
 
                     <div class="hero-stats">
                         <div class="stat-item">
-                            <span class="stat-number">15+</span>
-                            <span class="stat-label">Years Experience</span>
+                            <span class="stat-number">05+</span>
+                            <span class="stat-label">Restaurants registered</span>
                         </div>
                         <div class="stat-divider"></div>
                         <div class="stat-item">
@@ -168,7 +167,7 @@
                             
                             <div class="action-icons">
                                 {{-- Favorites --}}
-                                <form action="{{ route('dashboard.redirect') }}" method="GET" style="display:inline;">
+                                <form action="{{ route('dashboard') }}" method="GET" style="display:inline;">
                                     <button type="submit" class="square-icon" title="Add to Favorites">
                                         <i class="far fa-heart"></i>
                                     </button>

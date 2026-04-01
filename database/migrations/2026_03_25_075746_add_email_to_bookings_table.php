@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-       
-
-Schema::table('users', function (Blueprint $table) {
-    if (!Schema::hasColumn('users', 'role')) {
-        $table->string('role')->default('user');
-    }
-});
+        Schema::table('bookings', function (Blueprint $table) {
+            // We changed nullable(false) to nullable() to handle existing data
+            $table->string('email')->after('name')->nullable();
+        });
     }
 
     /**
@@ -25,8 +22,8 @@ Schema::table('users', function (Blueprint $table) {
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['role', 'profile_photo']);
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->dropColumn('email');
         });
     }
 };

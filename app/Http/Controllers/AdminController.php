@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Restaurant; 
 use App\Models\Reservation;
 use App\Models\Contact; 
-// Added missing model import to fix the "Class not found" error
 use App\Models\Booking; 
 use App\Mail\AdminReplyMail; 
 use Illuminate\Support\Facades\Storage;
@@ -16,12 +15,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response; 
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Review;
 
 class AdminController extends Controller
 {
     /**
      * MAIN DASHBOARD VIEW
-     * Fixed: Removed early return and added proper data compacting
      */
     public function index()
     {
@@ -31,10 +30,8 @@ class AdminController extends Controller
         $reservations = Reservation::with('restaurant')->get();
         $contactMessages = Contact::latest()->get();
         
-        // High performance fetching for the new booking system
         $bookings = Booking::with(['restaurant', 'user'])->latest()->get();
         
-        // Combined all data into a single view return
         return view('admin.dashboard', compact(
             'users', 
             'restaurants', 
@@ -46,7 +43,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Handle the message reply and update message status
+     * CONTACT MESSAGES & REPLIES
      */
     public function sendReply(Request $request)
     {
@@ -61,10 +58,8 @@ class AdminController extends Controller
             'body' => $request->reply_content
         ];
 
-        // Send the email
         Mail::to($request->recipient_email)->send(new \App\Mail\ContactReplyMail($details));
 
-        // Update record
         $contact = Contact::find($request->message_id);
         if ($contact) {
             $contact->update([
@@ -90,9 +85,6 @@ class AdminController extends Controller
         return back()->with('success', 'Message removed from history.');
     }
 
-    /**
-     * REAL-TIME API METHODS
-     */
     public function getMessageCount()
     {
         return response()->json([
@@ -115,7 +107,7 @@ class AdminController extends Controller
 
         $user = new User();
         $user->name = $request->name;
-        $user->email = $request->email;
+        $user->email = strtolower($request->email); // Consistency
         $user->role = $request->role;
         $user->password = Hash::make('password123'); 
 
@@ -153,13 +145,15 @@ class AdminController extends Controller
             'name' => 'required',
             'category' => 'required',
             'owner_name' => 'required',
-            'owner_email' => 'required|email', 
+            'owner_email' => 'required|email|exists:users,email', // Verify owner exists
             'location' => 'required',
             'description' => 'nullable',
             'image' => 'nullable|image|max:2048'
         ]);
 
-        // Auto-generate Matricule based on category
+        // Normalize email for perfect matching with Owner Dashboard
+        $validated['owner_email'] = strtolower($request->owner_email);
+
         $prefixMap = [
             'Fine Dining'     => 'FB-FINE',
             'Cafe'            => 'FB-CAFE',
@@ -180,7 +174,6 @@ class AdminController extends Controller
 
         $restaurant = Restaurant::create($validated);
 
-        // Notify Owner with PDF
         try {
             $pdf = Pdf::loadView('emails.restaurant_pdf', compact('restaurant'));
             Mail::send('emails.registration_notification', compact('restaurant'), function($message) use ($restaurant, $pdf) {
@@ -196,10 +189,53 @@ class AdminController extends Controller
     }
 
     /**
+     * UPDATED: Integrated with owner email matching logic
+     */
+    public function updateRestaurant(Request $request, $id)
+    {
+        $restaurant = Restaurant::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'required',
+            'owner_name' => 'required|string',
+            'owner_email' => 'required|email|exists:users,email',
+            'location' => 'required',
+            'description' => 'nullable',
+            'image' => 'nullable|image|max:2048'
+        ]);
+
+        $validated['owner_email'] = strtolower($request->owner_email);
+
+        if ($request->hasFile('image')) {
+            if ($restaurant->image_url) {
+                Storage::disk('public')->delete($restaurant->image_url);
+            }
+            $path = $request->file('image')->store('restaurants', 'public');
+            $validated['image_url'] = $path;
+        }
+
+        $restaurant->update($validated);
+
+        return redirect()->back()->with('success', 'Restaurant profile updated successfully.');
+    }
+
+    public function destroyRestaurant($id)
+    {
+        $restaurant = Restaurant::findOrFail($id);
+        
+        if ($restaurant->image_url) {
+            Storage::disk('public')->delete($restaurant->image_url);
+        }
+
+        $restaurant->delete();
+        return back()->with('success', 'Restaurant removed from the system.');
+    }
+
+    /**
      * BOOKING/RESERVATION STATUS CONTROL
      */
     public function confirmReservation($id) {
-        // Works for both Reservation and Booking models if they share the status field
         $res = Booking::findOrFail($id);
         $res->update(['status' => 'confirmed']);
         return back()->with('success', 'Reservation confirmed and locked.');
@@ -211,6 +247,9 @@ class AdminController extends Controller
         return back()->with('success', 'Reservation has been cancelled.');
     }
 
+    /**
+     * EXPORTS
+     */
     public function exportUsers()
     {
         $users = User::all();
