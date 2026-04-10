@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/Alldashboards.css') }}">
     <style>
-        /* Navy & Gold Premium Overrides */
+        
         :root {
             --navy: #001f3f;
             --gold: #D4AF37;

@@ -5,46 +5,36 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage; // Added for professional file handling
 use App\Models\Booking; 
 use App\Models\Order;
 use App\Models\Contact;
 use App\Models\Menu;
 use App\Models\Restaurant;
+use App\Models\User;
 use App\Notifications\BookingStatusUpdated;
 
 class OwnerController extends Controller
 {
-    /**
-     * Display the Owner Dashboard.
-     * Uses Matricule-based relationships for reliability.
-     */
     public function index() 
     {
         $user = Auth::user();
-
-        // 1. Fetch restaurants via the relationship defined in User.php
         $restaurants = $user->restaurants;
-        
-        // 2. Get IDs for precise filtering
         $restaurantIds = $restaurants->pluck('id');
 
-        // 3. Fetch all bookings for these restaurants
         $bookings = Booking::whereIn('restaurant_id', $restaurantIds)
             ->with('restaurant')
             ->latest()
             ->get();
 
-        // 4. Fetch all orders for these restaurants
         $orders = Order::whereIn('restaurant_id', $restaurantIds)
-            ->with(['user', 'restaurant'])
+            ->with(['user', 'restaurant', 'delivery_agent'])
             ->latest()
             ->get();
 
-        // 5. Filter messages and menu items
         $messages = Contact::whereIn('restaurant_id', $restaurantIds)->latest()->get();
         $menuItems = Menu::whereIn('restaurant_id', $restaurantIds)->with('restaurant')->get();
         
-        // 6. Kitchen Stats
         $cookingCount = $orders->where('status', 'cooking')->count();
 
         return view('owner.dashboard', [
@@ -58,154 +48,128 @@ class OwnerController extends Controller
     }
 
     /**
-     * Update order status with security check.
-     */
-    public function updateOrderStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:pending,cooking,ready,delivered'
-        ]);
-
-        $order = Order::findOrFail($id);
-        $user = Auth::user();
-
-        // SECURITY: Verify ownership via matricule or email
-        if ($order->restaurant->owner_matricule !== $user->matricule && $order->restaurant->owner_email !== $user->email) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $order->update(['status' => $request->status]);
-
-        return redirect()->back()->with('success', 'Order status updated successfully!');
-    }
-
-    /**
-     * Update booking (reservation) status with Notification and Recommendation logic.
-     */
-    public function updateBookingStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:pending,confirmed,cancelled',
-            'recommendation' => 'nullable|string|max:500' 
-        ]);
-
-        $booking = Booking::with('user', 'restaurant')->findOrFail($id);
-        $user = Auth::user();
-
-        // SECURITY: Check ownership
-        if ($booking->restaurant->owner_matricule !== $user->matricule && $booking->restaurant->owner_email !== $user->email) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        // Update status
-        $booking->update(['status' => $request->status]);
-
-        // Notify the Customer (the user who made the booking)
-        if ($booking->user) {
-            $booking->user->notify(new BookingStatusUpdated($booking, $request->recommendation));
-        }
-
-        $msg = $request->status == 'cancelled' ? 'Booking declined and recommendation sent.' : 'Booking confirmed!';
-        
-        return redirect()->back()->with('success', $msg);
-    }
-
-    /**
-     * NEW: Delete a booking (reservation) permanently.
-     */
-    public function destroyBooking($id)
-    {
-        $booking = Booking::findOrFail($id);
-        $user = Auth::user();
-
-        // SECURITY: Check ownership
-        if ($booking->restaurant->owner_matricule !== $user->matricule && $booking->restaurant->owner_email !== $user->email) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $booking->delete();
-
-        return redirect()->back()->with('success', 'Booking deleted successfully.');
-    }
-
-    /**
      * Store a new menu item.
+     * UPDATED: Now supports 'ingredients' and uses the 'public' storage disk.
      */
-    public function storeMenu(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'restaurant_id' => 'required|exists:restaurants,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
+      public function storeMenu(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'price' => 'required|numeric',
+        'description' => 'nullable|string|max:500', // Changed from ingredients to description
+        'restaurant_id' => 'required|exists:restaurants,id',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048'
+    ]);
 
-        $restaurant = Restaurant::findOrFail($request->restaurant_id);
+    $restaurant = Restaurant::findOrFail($request->restaurant_id);
 
-        // Check if the owner actually owns this restaurant
-        if ($restaurant->owner_matricule !== Auth::user()->matricule && $restaurant->owner_email !== Auth::user()->email) {
-            abort(403);
-        }
-
-        $data = $request->only(['name', 'price', 'restaurant_id']);
-
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/menus'), $filename);
-            $data['image'] = 'uploads/menus/' . $filename;
-        }
-
-        Menu::create($data);
-
-        return redirect()->back()->with('success', 'New dish added to the menu!');
+    if ($restaurant->owner_email !== Auth::user()->email) {
+        abort(403);
     }
+
+    $data = [
+        'name'          => $request->name,
+        'price'         => $request->price,
+        'description'   => $request->description, // Matches Model
+        'restaurant_id' => $request->restaurant_id,
+        'is_available'  => true,
+    ];
+
+    if ($request->hasFile('image')) {
+        // Saves to storage/app/public/menus
+        $path = $request->file('image')->store('menus', 'public');
+        $data['image'] = $path;
+    }
+
+    Menu::create($data);
+
+    return redirect()->back()->with('success', 'New dish added!');
+}
 
     /**
      * Delete a menu item.
+     * UPDATED: Corrected to delete from Storage disk.
      */
     public function destroyMenu($id)
     {
         $menuItem = Menu::findOrFail($id);
         
-        // Security check
-        if ($menuItem->restaurant->owner_matricule !== Auth::user()->matricule) {
+        if ($menuItem->restaurant->owner_email !== Auth::user()->email) {
             abort(403);
         }
 
-        // Delete image file if exists
-        if ($menuItem->image && file_exists(public_path($menuItem->image))) {
-            @unlink(public_path($menuItem->image));
+        // Delete image from storage
+        if ($menuItem->image) {
+            Storage::disk('public')->delete($menuItem->image);
         }
 
         $menuItem->delete();
         return redirect()->back()->with('success', 'Dish removed from menu.');
     }
 
-    /**
-     * Update the owner's profile picture.
-     */
+    // --- Order & Booking Methods (Kept as provided, they are functional) ---
+
+    public function updateOrderStatus(Request $request, $id)
+    {
+        $request->validate(['status' => 'required|in:pending,cooking,preparing,ready,delivering,delivered']);
+        $order = Order::findOrFail($id);
+        if ($order->restaurant->owner_email !== Auth::user()->email) abort(403);
+        $order->update(['status' => $request->status]);
+        return redirect()->back()->with('success', 'Order status updated successfully!');
+    }
+
+    public function acceptOrder($id)
+    {
+        $order = Order::findOrFail($id);
+        if ($order->restaurant->owner_email !== Auth::user()->email) abort(403);
+        $order->update(['status' => 'preparing']);
+        return redirect()->back()->with('success', 'Order Accepted! Move to preparation.');
+    }
+
+    public function rejectOrder($id)
+    {
+        $order = Order::findOrFail($id);
+        if ($order->restaurant->owner_email !== Auth::user()->email) abort(403);
+        $order->update(['status' => 'rejected']);
+        return redirect()->back()->with('error', 'Order has been rejected.');
+    }
+
+    public function assignAgent(Request $request, $id)
+    {
+        $request->validate(['delivery_agent_name' => 'required|string|max:255']);
+        $order = Order::findOrFail($id);
+        if ($order->restaurant->owner_email !== Auth::user()->email) abort(403);
+        $order->update(['agent_id' => $request->delivery_agent_name, 'status' => 'delivering']);
+        return redirect()->back()->with('success', 'Agent assigned. Food is out for delivery!');
+    }
+
+    public function updateBookingStatus(Request $request, $id)
+    {
+        $request->validate(['status' => 'required|in:pending,confirmed,cancelled', 'recommendation' => 'nullable|string|max:500']);
+        $booking = Booking::with('user', 'restaurant')->findOrFail($id);
+        if ($booking->restaurant->owner_email !== Auth::user()->email) abort(403);
+        $booking->update(['status' => $request->status]);
+        if ($booking->user) $booking->user->notify(new BookingStatusUpdated($booking, $request->recommendation));
+        return redirect()->back()->with('success', 'Booking status updated!');
+    }
+
+    public function destroyBooking($id)
+    {
+        $booking = Booking::findOrFail($id);
+        if ($booking->restaurant->owner_email !== Auth::user()->email) abort(403);
+        $booking->delete();
+        return redirect()->back()->with('success', 'Booking deleted.');
+    }
+
     public function updateProfile(Request $request)
     {
-        $request->validate([
-            'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
+        $request->validate(['profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
         $user = Auth::user();
-
         if ($request->hasFile('profile_photo')) {
-            if ($user->profile_photo && file_exists(public_path($user->profile_photo))) {
-                @unlink(public_path($user->profile_photo));
-            }
-
-            $file = $request->file('profile_photo');
-            $filename = time() . '_' . $user->id . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/profiles'), $filename);
-            
-            $user->profile_photo = 'uploads/profiles/' . $filename;
-            $user->save();
+            if ($user->profile_photo) Storage::disk('public')->delete($user->profile_photo);
+            $path = $request->file('profile_photo')->store('profiles', 'public');
+            $user->update(['profile_photo' => $path]);
         }
-
-        return back()->with('success', 'Profile photo updated successfully!');
+        return back()->with('success', 'Profile photo updated!');
     }
 }

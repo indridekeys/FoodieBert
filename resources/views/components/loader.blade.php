@@ -36,7 +36,7 @@
         justify-content: center;
         align-items: center;
         z-index: 10000;
-        transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+        transition: opacity 0.5s ease-in-out, visibility 0.5s;
     }
 
     .loader-content { 
@@ -47,12 +47,11 @@
         align-items: center;
     }
 
-    /* THE SPINNER - Locked Aspect Ratio */
     .crazy-spinner {
         position: relative;
         width: 100px;
         height: 100px;
-        aspect-ratio: 1 / 1; /* Forces a perfect square container */
+        aspect-ratio: 1 / 1;
         margin-bottom: 25px;
         display: flex;
         justify-content: center;
@@ -67,41 +66,33 @@
         border: 4px solid transparent;
         border-radius: 50%; 
         box-sizing: border-box; 
-        aspect-ratio: 1 / 1; 
     }
 
-    /* Outer Ring */
     .crazy-spinner .ring:nth-child(1) { 
-        width: 100%; 
-        height: 100%; 
+        width: 100px; height: 100px; 
         border-top: 4px solid #C5A059; 
-        animation: spin 1.5s linear infinite;
+        animation: spin 1s linear infinite;
     }
 
-    /* Middle Ring */
     .crazy-spinner .ring:nth-child(2) { 
-        width: 75%; 
-        height: 75%; 
+        width: 75px; height: 75px; 
         border-bottom: 4px solid #C5A059; 
-        animation: spin 1.2s linear infinite reverse; 
+        animation: spin 0.8s linear infinite reverse; 
     }
 
-    /* Inner Ring */
     .crazy-spinner .ring:nth-child(3) { 
-        width: 50%; 
-        height: 50%; 
+        width: 50px; height: 50px; 
         border-right: 4px solid #C5A059; 
-        animation: spin 0.8s linear infinite; 
+        animation: spin 0.5s linear infinite; 
     }
 
     .logo-icon { 
         color: #C5A059; 
         font-size: 1.4rem; 
-        animation: pulse 1.5s ease-in-out infinite;
+        animation: pulse 1s ease-in-out infinite;
         z-index: 2;
     }
 
-    /* TEXT & PROGRESS */
     .loader-text {
         color: white;
         font-family: 'Poppins', sans-serif;
@@ -125,7 +116,8 @@
         width: 0%;
         height: 100%;
         background: linear-gradient(90deg, #C5A059, #e74c3c);
-        transition: width 0.3s ease-out;
+        /* Snappy transition for the fast-moving bar */
+        transition: width 0.15s ease-out;
     }
 
     .percent-display { color: #C5A059; font-size: 12px; font-family: monospace; margin-bottom: 20px; }
@@ -158,7 +150,6 @@
 
     .skip-btn.show-skip { opacity: 1; visibility: visible; }
 
-    /* ANIMATIONS */
     @keyframes spin { 
         from { transform: translate(-50%, -50%) rotate(0deg); }
         to { transform: translate(-50%, -50%) rotate(360deg); } 
@@ -184,47 +175,50 @@
             "Garnishing your experience...",
             "Warming up the ovens...",
             "Sourcing the freshest ingredients...",
-            "Adding a pinch of secret spices...",
-            "The Chef is tasting the sauce...",
-            "Setting the table for excellence...",
-            "Traditional recipes, modern magic..."
+            "The Chef is tasting the sauce..."
         ];
 
         quoteEl.innerText = quotes[Math.floor(Math.random() * quotes.length)];
 
-        const assets = Array.from(document.querySelectorAll("img, script[src], link[rel='stylesheet']"));
-        let loadedCount = 0;
+        let currentProgress = 0;
+        
+        // Fast Simulation Logic
+        const fastInterval = setInterval(() => {
+            // Random jumps between 10% and 20% for a "fast" feel
+            currentProgress += Math.random() * 15 + 5;
+
+            if (currentProgress >= 100) {
+                currentProgress = 100;
+                updateUI(100);
+                clearInterval(fastInterval);
+                finishLoading();
+            } else {
+                updateUI(currentProgress);
+            }
+        }, 100); // Update every 100ms
 
         function updateUI(p) {
-            p = Math.min(Math.round(p), 100);
-            progressBar.style.width = p + "%";
-            progressText.innerText = p + "%";
-            if (p >= 100) {
-                setTimeout(() => loader.classList.add("loader-hidden"), 600);
+            const val = Math.round(p);
+            progressBar.style.width = val + "%";
+            progressText.innerText = val + "%";
+        }
+
+        function finishLoading() {
+            setTimeout(() => {
+                loader.classList.add("loader-hidden");
+            }, 400); // Brief pause at 100% for visual satisfaction
+        }
+
+        // Safety: If the page takes too long or finishes instantly, handle it
+        window.addEventListener('load', () => {
+            if (currentProgress < 100) {
+                currentProgress = 100;
+                updateUI(100);
             }
-        }
+        });
 
-        function increment() {
-            loadedCount++;
-            const percentage = assets.length > 0 ? (loadedCount / assets.length) * 100 : 100;
-            updateUI(percentage);
-        }
-
-        if (assets.length === 0) {
-            updateUI(100);
-        } else {
-            assets.forEach(asset => {
-                if (asset.complete || asset.readyState === 4) {
-                    increment();
-                } else {
-                    asset.addEventListener("load", increment);
-                    asset.addEventListener("error", increment);
-                }
-            });
-        }
-
-        setTimeout(() => skipBtn.classList.add("show-skip"), 5000);
+        // Skip button appears sooner (after 2s) if user is impatient
+        setTimeout(() => skipBtn.classList.add("show-skip"), 2000);
         skipBtn.addEventListener("click", () => loader.classList.add("loader-hidden"));
-        setTimeout(() => updateUI(100), 10000);
     });
 </script>

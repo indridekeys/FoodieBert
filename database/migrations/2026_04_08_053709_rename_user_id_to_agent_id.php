@@ -9,11 +9,10 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
+    public function up()
 {
-    Schema::table('users', function (Blueprint $table) {
-        // $table->string('matricule')->nullable()->unique();
-        // $table->boolean('is_verified')->default(false);
+    Schema::table('orders', function (Blueprint $table) {
+        $table->renameColumn('user_id', 'agent_id');
     });
 }
 
@@ -22,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('ord', function (Blueprint $table) {
             //
         });
     }

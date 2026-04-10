@@ -9,11 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
+public function up(): void
 {
     Schema::create('bookings', function (Blueprint $table) {
         $table->id();
         $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
+        
         $table->integer('guests');
         $table->decimal('total_price', 8, 2)->default(0);
         $table->string('status')->default('pending');

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class GalleryController extends Controller
 {
     /**
-     * Store multiple images for a specific restaurant.
+     * Store multiple images for a specific restaurant with name and price.
      */
     public function store(Request $request, Restaurant $restaurant)
     {
@@ -21,8 +21,11 @@ class GalleryController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        // Updated Validation: Added 'name' and 'price'
         $request->validate([
-            'images' => 'required|array',
+            'name'     => 'required|string|max:255',
+            'price'    => 'required|numeric|min:0',
+            'images'   => 'required|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048', 
         ]);
 
@@ -31,13 +34,16 @@ class GalleryController extends Controller
                 // Store in public/gallery/{restaurant_id}
                 $path = $image->store('gallery/' . $restaurant->id, 'public');
 
+                // Save image path along with name and price
                 $restaurant->gallery()->create([
-                    'path' => $path,
+                    'path'  => $path,
+                    'name'  => $request->name,
+                    'price' => $request->price,
                 ]);
             }
         }
 
-        return back()->with('success', 'Visual Feast updated!');
+        return back()->with('success', 'Visual Feast updated with item details!');
     }
 
     /**
@@ -50,12 +56,13 @@ class GalleryController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        if (Storage::disk('public')->exists($gallery->path)) {
+        // Delete the physical file
+        if ($gallery->path && Storage::disk('public')->exists($gallery->path)) {
             Storage::disk('public')->delete($gallery->path);
         }
 
         $gallery->delete();
 
-        return back()->with('success', 'Image removed from catalog.');
+        return back()->with('success', 'Item removed from catalog.');
     }
 }

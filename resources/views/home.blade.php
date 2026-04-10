@@ -31,7 +31,7 @@
             <div class="hero-overlay"></div>
             <div class="hero-container">
                 <div class="hero-content">
-                    <!-- <span class="hero-subtitle">Premium Culinary Experience</span>  -->
+                    
                     <h1 class="hero-title">
                         Savor the Art of <br>
                         <span class="text-cursive">Traditional</span> 
@@ -85,7 +85,7 @@
                 <h2 class="section-title">Why Choose <span class="text-highlight">FoodieBert</span></h2>
             </div>
             <div class="title-description">
-                <p>We combine ancient traditions with modern precision to deliver an unforgettable dining experience in Bertoua.</p>
+                <p>Our local combine ancient traditions with modern precision to deliver an unforgettable dining experience in Bertoua.</p>
             </div>
         </div>
 
@@ -93,13 +93,13 @@
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-utensils"></i></div>
                 <h3>Master Chefs</h3>
-                <p>Our kitchen is led by world-class chefs specializing in authentic regional flavors.</p>
+                <p>Our restaurants local cuisine is led by world-class chefs specializing in authentic regional flavors.</p>
             </div>
 
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-leaf"></i></div>
-                <h3>Fresh Ingredients</h3>
-                <p>We source only the finest organic produce and premium meats daily for every dish.</p>
+                <h3>Booking Services</h3>
+                <p>Our local restaurants provide classic services to satisfy you.</p>
             </div>
 
             <div class="feature-card">
@@ -167,7 +167,7 @@
                             
                             <div class="action-icons">
                                 {{-- Favorites --}}
-                                <form action="{{ route('dashboard') }}" method="GET" style="display:inline;">
+                                <form action="#" method="GET" style="display:inline;">
                                     <button type="submit" class="square-icon" title="Add to Favorites">
                                         <i class="far fa-heart"></i>
                                     </button>
@@ -189,54 +189,58 @@
 
         <div class="view-more-container">
             <a href="{{ route('restaurants') }}" class="view-more-btn">
-                View All {{ $restaurants->count() }} Restaurants <i class="fas fa-arrow-right"></i>
+                View All Restaurants <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     </div>
 </section>
-<section class="portal-section dark-theme">
-    <div class="container">
-        <div class="section-top">
+<!-- ======================== Portal section ======================== -->
+ <section class="portal-section dark-theme" style="background: #0a192f; padding: 100px 0; color: white;">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        
+        <div class="section-top" style="text-align: center; margin-bottom: 60px;">
             <div class="title-group">
-                <span class="text-cursive" style="color: var(--light-red); font-size: 32px;">Join Our Network</span>
-                <h2 class="section-title" style="color: white;">One Platform, <span class="text-highlight">Every</span> Need</h2>
+                <span class="text-cursive" style="color: var(--accent-gold); font-family: 'Great Vibes', cursive; font-size: 36px; display: block;">Join Our Network</span>
+                <h2 class="section-title" style="font-family: 'Playfair Display', serif; font-size: 3.5rem; margin: 10px 0;">One Platform, <span style="color: var(--accent-gold);"></span></h2>
             </div>
             <div class="title-description">
-                <p style="color: #cbd5e0;">Whether you are a hungry diner, a professional courier, or a restaurant owner, FoodieBert provides the tools for your success.</p>
+                <p style="color: #cbd5e0; max-width: 650px; margin: 0 auto; font-size: 1.1rem;">Whether you are looking for a gourmet meal, growing your kitchen business, or need expert support, FoodieBert is here for you.</p>
             </div>
         </div>
 
-        <div class="portal-grid">
-            <div class="portal-card">
-                <div class="portal-icon">
-                    <i class="fas fa-briefcase"></i>
+        <div class="portal-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
+            
+            <div class="portal-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 50px 30px; border-radius: 20px; text-align: center; transition: 0.4s;">
+                <div class="portal-icon" style="font-size: 3.5rem; color: var(--accent-gold); margin-bottom: 25px;">
+                    <i class="fas fa-utensils"></i>
                 </div>
-                <h3>Business Account</h3>
-                <p>Ideal for corporate catering, bulk orders, and office lunch management with tax-ready invoicing.</p>
-                <a href="/register/business" class="btn-portal-outline">Create Account</a>
+                <h3 style="font-family: 'Playfair Display'; font-size: 1.8rem; margin-bottom: 20px;">Order Your Meals</h3>
+                <p style="color: #a0aec0; line-height: 1.6; margin-bottom: 30px;">Indulge in Bertoua's finest flavors. Browse our exclusive menu and enjoy a premium dining experience at home.</p>
+                <a href="#menu" class="btn-gold" style="border: 2px solid var(--accent-gold); background: transparent; color: var(--accent-gold); padding: 12px 35px; text-decoration: none; font-weight: 700; border-radius: 4px; display: inline-block; transition: 0.3s;">EXPLORE MENU</a>
             </div>
 
-            <div class="portal-card highlighted">
-                <div class="portal-icon">
-                    <i class="fas fa-moped"></i>
+            <div class="portal-card highlighted" style="background: rgba(197, 160, 89, 0.05); border: 2px solid var(--accent-gold); padding: 50px 30px; border-radius: 20px; text-align: center; transform: translateY(-15px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); transition: 0.4s;">
+                <div class="portal-icon" style="font-size: 3.5rem; color: var(--accent-gold); margin-bottom: 25px;">
+                    <i class="fas fa-store-alt"></i>
                 </div>
-                <h3>Delivery Partner</h3>
-                <p>Earn on your own schedule. Sign in to your driver dashboard or apply to start delivering today.</p>
-                <a href="/login/delivery" class="btn-portal-red">Sign In to Deliver</a>
+                <h3 style="font-family: 'Playfair Display'; font-size: 1.8rem; margin-bottom: 20px;">Register Restaurant</h3>
+                <p style="color: #cbd5e0; line-height: 1.6; margin-bottom: 30px;">Partner with us to expand your reach. List your kitchen on FoodieBert and watch your culinary business grow.</p>
+                <a href="{{ url('/register/restaurant') }}" class="btn-gold" style="background: var(--accent-gold); color: #fff; padding: 14px 40px; text-decoration: none; font-weight: 800; border-radius: 4px; display: inline-block; box-shadow: 0 10px 20px rgba(197, 160, 89, 0.2);">JOIN THE NETWORK</a>
             </div>
 
-            <div class="portal-card">
-                <div class="portal-icon">
-                    <i class="fas fa-store"></i>
+            <div class="portal-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 50px 30px; border-radius: 20px; text-align: center; transition: 0.4s;">
+                <div class="portal-icon" style="font-size: 3.5rem; color: var(--accent-gold); margin-bottom: 25px;">
+                    <i class="fas fa-headset"></i>
                 </div>
-                <h3>Restaurant Owner</h3>
-                <p>Reach thousands of new customers. Register your kitchen and start growing your business with us.</p>
-                <a href="/register/restaurant" class="btn-portal-outline">Register Restaurant</a>
+                <h3 style="font-family: 'Playfair Display'; font-size: 1.8rem; margin-bottom: 20px;">Help & Support</h3>
+                <p style="color: #a0aec0; line-height: 1.6; margin-bottom: 30px;">Need assistance? Our support team is available to help you with orders, registrations, or any questions you have.</p>
+                <a href="/contact" class="btn-gold" style="border: 2px solid var(--accent-gold); background: transparent; color: var(--accent-gold); padding: 12px 35px; text-decoration: none; font-weight: 700; border-radius: 4px; display: inline-block; transition: 0.3s;">GET SUPPORT</a>
             </div>
+
         </div>
     </div>
 </section>
-  <!-- ==================== Restaurants Section End  =================== -->
+  <!-- ==================== Portal Section End  =================== -->
          
      <!--   =============== Blog Section Start  ============================== -->
         <section class="blog-section">
@@ -247,7 +251,7 @@
                 <h2 class="section-title">Our Culinary <span class="text-highlight">Stories</span></h2>
             </div>
             <div class="title-description">
-                <p>Stay updated with the latest recipes, kitchen secrets, and food events happening at FoodieBert Alaska.</p>
+                <p>Stay updated with the latest recipes, kitchen secrets, and food events happening at FoodieBert.</p>
             </div>
         </div>
 

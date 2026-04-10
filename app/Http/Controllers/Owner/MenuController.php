@@ -37,4 +37,22 @@ class MenuController extends Controller
 
         return redirect()->route('owner.menus.index')->with('success', 'Menu created!');
     }
+
+    public function destroy($id)
+{
+    $menuItem = \App\Models\Menu::findOrFail($id);
+    
+    // Security check
+    if ($menuItem->restaurant->owner_email !== auth()->user()->email) {
+        abort(403);
+    }
+
+    // Delete image from storage if it exists
+    if ($menuItem->image) {
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($menuItem->image);
+    }
+
+    $menuItem->delete();
+    return redirect()->back()->with('success', 'Dish removed successfully.');
+}
 }

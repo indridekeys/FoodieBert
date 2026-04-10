@@ -110,7 +110,7 @@
                 Showing <span id="visibleCount">{{ count($restaurants) }}</span> establishments
             </div>
         </div>
-        
+        <!-- =================restaurant registry =========== -->
         <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f4f4f4; padding-bottom: 20px; margin-bottom: 30px; max-width: 1200px; margin: 0 auto;">
             <h2 style="font-family: 'Playfair Display'; margin: 0; font-size: 2rem; color: #001f3f;">
                 <i class="fas fa-building-columns" style="color: #D4AF37;"></i> Restaurant Registry
@@ -302,9 +302,21 @@
             <a href="javascript:void(0)" class="nav-item" onclick="showModal('modal-restaurant-section')">
                 <i class="fas fa-building-columns"></i> Restaurant Registry
             </a>
+            <a href="#applications" class="nav-item" style="position: relative;">
+    <i class="fas fa-file-signature"></i> 
+    <span>New Applications</span>
+    @php
+        $appCount = \DB::table('restaurant_applications')->where('status', 'pending')->count();
+    @endphp
+    @if($appCount > 0)
+        <span style="background: #D4AF37; color: #001f3f; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 50%; position: absolute; right: 15px; top: 50%; transform: translateY(-50%);">
+            {{ $appCount }}
+        </span>
+    @endif
+</a>
             <a href="#users" class="nav-item"><i class="fas fa-users-viewfinder"></i> User Directory</a>
 
-            <a href="#partners" class="nav-item"><i class="fas fa-handshake"></i> Partner Portals</a>
+            <!-- <a href="#partners" class="nav-item"><i class="fas fa-handshake"></i> Partner Portals</a> -->
             <a href="#activity" class="nav-item"><i class="fas fa-bell"></i> Live Activity</a>
             <a href="#messages" class="nav-item" style="position: relative; display: flex; align-items: center; gap: 10px;">
     <i class="fas fa-envelope"></i> 
@@ -370,44 +382,83 @@
             <div class="metric-card"><small>System Pulse</small><h3 style="color:#16a34a">Optimal</h3></div>
         </div>
 
-        <div id="activity" class="section-header" style="margin-top: 40px;">
-            <h4><i class="fas fa-calendar-check" style="color: var(--accent-gold);"></i> Reservation Management</h4>
-        </div>
-        <div class="data-container">
-            <table style="width: 100%; border-collapse: collapse; background: white;">
-                <thead>
-                    <tr style="background: #001f3f; color: #D4AF37; text-align: left;">
-                        <th style="padding: 15px;">Guest</th>
-                        <th style="padding: 15px;">Restaurant</th>
-                        <th style="padding: 15px;">Date & Time</th>
-                        <th style="padding: 15px;">Status</th>
-                        <th style="padding: 15px;">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($reservations as $res)
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 15px;">{{ $res->guest_name }}</td>
-                        <td style="padding: 15px;">{{ $res->restaurant->name }}</td>
-                        <td style="padding: 15px;">{{ \Carbon\Carbon::parse($res->reservation_time)->format('d M, H:i') }}</td>
-                        <td style="padding: 15px;">
-                            <span style="padding: 5px 12px; border-radius: 4px; font-size: 0.75rem; font-weight:700; text-transform:uppercase; 
-                                background: {{ $res->status == 'pending' ? '#FFF9E6' : '#E6F4EA' }}; 
-                                color: {{ $res->status == 'pending' ? '#D4AF37' : '#1E7E34' }}; 
-                                border: 1px solid {{ $res->status == 'pending' ? '#F3E5AB' : '#CEEAD6' }};">
-                                {{ $res->status }}
-                            </span>
-                        </td>
-                        <td style="padding: 15px;">
-                            <button onclick="viewReservationDetails({{ json_encode($res) }})" style="background: #001f3f; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px;">
-                                <i class="fas fa-eye"></i> Details
+        <!-- ============== restaurant application section ============================= -->
+        <div id="applications" class="section-header" style="margin-top: 40px;">
+    <h4><i class="fas fa-clipboard-list" style="color: var(--accent-gold);"></i> Pending Establishment Applications</h4>
+</div>
+
+<div class="data-container">
+    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <thead>
+            <tr style="background: #0a192f; color: #D4AF37; text-align: left;">
+                <th style="padding: 15px;">Establishment</th>
+                <th style="padding: 15px;">Proprietor</th>
+                <th style="padding: 15px;">Category/Location</th>
+                <th style="padding: 15px;">Admin Feedback</th>
+                <th style="padding: 15px; text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $applications = \DB::table('restaurant_applications')->where('status', 'pending')->get();
+            @endphp
+
+            @forelse($applications as $app)
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 15px;">
+                    <strong>{{ $app->establishment_name }}</strong><br>
+                    <small style="color: #666;">{{ $app->owner_email }}</small>
+                </td>
+                <td style="padding: 15px;">{{ $app->proprietor_name }}</td>
+                <td style="padding: 15px;">
+                    <span style="background: #f0fdf4; color: #166534; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; border: 1px solid #bbf7d0;">
+                        {{ strtoupper($app->category) }}
+                    </span><br>
+                    <small style="color: #888;">{{ $app->location_address }}</small>
+                </td>
+                
+                <td style="padding: 15px;">
+                    <textarea name="feedback_{{ $app->id }}" 
+                              form="form_approve_{{ $app->id }}"
+                              style="width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 5px; font-size: 12px;" 
+                              placeholder="Type approval/rejection reason here..."
+                              oninput="document.getElementById('reject_msg_{{ $app->id }}').value = this.value"></textarea>
+                </td>
+
+                <td style="padding: 15px; text-align: center;">
+                    <div style="display: flex; flex-direction: column; gap: 8px; justify-content: center;">
+                        
+                        <form id="form_approve_{{ $app->id }}" action="{{ route('admin.restaurants.approve', $app->id) }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="admin_message" value=""> <button type="submit" style="background: #10b981; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-weight: 600; width: 100%;">
+                                <i class="fas fa-check"></i> Approve
                             </button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                        </form>
+
+                        <form action="{{ route('admin.restaurants.reject', $app->id) }}" method="POST">
+                            @csrf @method('DELETE')
+                            <input type="hidden" id="reject_msg_{{ $app->id }}" name="admin_message" value="">
+                            <button type="submit" style="background: #ef4444; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; width: 100%;" 
+                                    onclick="return confirm('Are you sure you want to reject this application?')">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </form>
+                        
+                    </div>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="5" style="padding: 30px; text-align: center; color: #999;">
+                    <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                    No pending applications.
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+         <!-- ================ restaurant application end =============================== -->
         <div id="users" class="section-header" style="margin-top: 40px; display: flex; justify-content: space-between; align-items: center;">
     <h4><i class="fas fa-user-shield" style="color: var(--accent-gold);"></i> Citizen Management</h4>
     <div>
@@ -523,7 +574,7 @@
 
 <script>
     
-    // --- Modal Control Logic ---
+   
     function showModal(id) {
         const modal = document.getElementById(id);
         if (modal) modal.style.display = 'flex';
@@ -540,7 +591,6 @@
         el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'flex' : 'none';
     }
 
-    // --- Restaurant Logic ---
     function prepareAddRestaurant() {
         const form = document.getElementById('restaurantForm');
         const title = document.getElementById('modal-title');
@@ -560,17 +610,14 @@
     const form = document.getElementById('restaurantForm');
     const title = document.getElementById('modal-title');
     const methodInput = document.getElementById('form-method');
-    
-    // 1. Update the URL to include the ID
+
     form.action = `/admin/restaurants/${res.id}`;
     
-    // 2. Change method to PUT (Fixes the 405 error)
+    
     methodInput.value = "PUT";
     
-    // 3. Update Visuals
     title.innerHTML = '<i class="fas fa-edit" style="color: #D4AF37;"></i> Update ' + res.name;
     
-    // 4. Populate Fields
     document.getElementById('field-name').value = res.name;
     document.getElementById('field-category').value = res.category;
     document.getElementById('field-owner-name').value = res.owner_name;
@@ -578,7 +625,7 @@
     document.getElementById('field-location').value = res.location;
     document.getElementById('field-description').value = res.description;
     
-    // 5. Image Preview Handling
+    
     if(res.image_url) {
         document.getElementById('imagePreview').src = `/storage/${res.image_url}`;
     } else {
@@ -588,13 +635,11 @@
     showModal('modal-res');
 }
 
-// Ensure you call this function when clicking the "Add New Restaurant" button
 function openAddModal() {
     const form = document.getElementById('restaurantForm');
     const title = document.getElementById('modal-title');
     const methodInput = document.getElementById('form-method');
 
-    // Reset to store route and POST method
     form.action = "{{ route('admin.restaurants.store') }}";
     methodInput.value = "POST";
     
@@ -693,6 +738,19 @@ function openAddModal() {
             row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
         });
     }
+
+    // Simple script to sync the textarea value to the hidden inputs in the forms
+    document.querySelectorAll('textarea[name^="feedback_"]').forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            const appId = this.name.split('_')[1];
+            // Update the hidden message input in the approval form
+            const approveForm = document.getElementById(`form_approve_${appId}`);
+            if(approveForm) approveForm.querySelector('input[name="admin_message"]').value = this.value;
+            // Update the hidden message input in the rejection form
+            const rejectInput = document.getElementById(`reject_msg_${appId}`);
+            if(rejectInput) rejectInput.value = this.value;
+        });
+    });
 </script>
 
 </body>

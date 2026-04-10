@@ -113,8 +113,6 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        /* --light-red: #e74c3c;           
-    --dark-red: #b03a2e; */
     }
     .close-cart-btn {
         background: none;
@@ -181,7 +179,6 @@
                     <ul class="dropdown-list">
                         <li><a href="{{ route('restaurants') }}"><i class="fas fa-store"></i> Restaurants</a></li>
                         <li><a href="{{ route('restaurants') }}"><i class="fas fa-store"></i> Blog</a></li>
-                        <!-- <li><a href="#"><i class="fas fa-fire"></i> Hot Deals</a></li> -->
                     </ul>
                 </div>
             </li>
@@ -228,21 +225,84 @@
     </div>
 </header>
 
+@if ($errors->any())
+    <div style="position: fixed; top: 80px; right: 20px; z-index: 10000; background: #dc3545; color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        <strong style="display:block; margin-bottom: 5px;">Order Failed:</strong>
+        <ul style="margin:0; padding-left:20px; font-size: 0.85rem;">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button onclick="this.parentElement.remove()" style="background:none; border:none; color:white; float:right; cursor:pointer;">&times;</button>
+    </div>
+@endif
+
+@if(session('success'))
+    <div id="successMessage" style="position: fixed; top: 20px; right: 20px; z-index: 10000; background: #28a745; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; animation: slideIn 0.5s ease-out;">
+        <i class="fas fa-check-circle" style="font-size: 1.5rem;"></i>
+        <div>
+            <strong style="display: block;">{{ str_contains(session('success'), 'order') || str_contains(session('success'), 'placed') ? 'Order Sent!' : 'Success!' }}</strong>
+            <span style="font-size: 0.9rem;">{{ session('success') }}</span>
+        </div>
+        <button onclick="this.parentElement.remove()" style="background:none; border:none; color:white; margin-left:15px; cursor:pointer; font-size:1.2rem;">&times;</button>
+    </div>
+
+    <style>
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+
+    <script>
+        setTimeout(() => {
+            const msg = document.getElementById('successMessage');
+            if(msg) {
+                msg.style.opacity = '0';
+                msg.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => msg.remove(), 500);
+            }
+        }, 5000);
+    </script>
+@endif
+
 <div id="cartModal" class="cart-modal">
     <div class="cart-header">
         <h2><i class="fas fa-shopping-basket"></i> Your Cart</h2>
-        <button id="closeCart" class="close-cart-btn">&times;</button>
+        <button id="closeCart" class="close-cart-btn" type="button">&times;</button>
     </div>
-    <div class="cart-body" id="cartItems">
-        <p style="text-align:center; margin-top:50px; color:#999;">Your cart is currently empty.</p>
-    </div>
-    <div class="cart-footer">
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:bold; font-size:1.1rem;">
-            <span>Total:</span>
-            <span id="cartTotal">0 FCFA</span>
+
+    <form action="{{ route('orders.store') }}" method="POST" id="checkoutForm">
+        @csrf
+        <div class="cart-body" id="cartItemsList">
+            <p id="emptyCartMsg" style="text-align:center; margin-top:50px; color:#999;">Your cart is currently empty.</p>
         </div>
-        <button class="checkout-btn">Proceed to Checkout</button>
-    </div>
+
+        <div class="cart-footer">
+            <div style="margin-bottom: 15px; padding: 0 15px;">
+                <label style="display:block; margin-bottom:5px; font-weight:bold; font-size: 0.9rem; color: #0a192f;">
+                    <i class="fas fa-map-marker-alt" style="color: #e74c3c;"></i> Delivery Address:
+                </label>
+                <input type="text" name="delivery_address" id="delivery_address" class="form-control" 
+                       placeholder="Street, Quarter, or House No." required 
+                       style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 8px; transition: border-color 0.3s;"
+                       onfocus="this.style.borderColor='#e74c3c'">
+            </div>
+
+            <div style="display:flex; justify-content:space-between; padding: 10px 15px; font-weight:bold; font-size:1.1rem; border-top: 1px solid #eee;">
+                <span>Total:</span>
+                <span id="cartDisplayTotal" style="color: #0a192f;">0 FCFA</span>
+                <input type="hidden" name="total_price" id="hiddenCartTotal" value="0">
+            </div>
+
+            <div style="padding: 15px;">
+                <button type="submit" class="checkout-btn" 
+                        style="width: 100%; background: #e74c3c; color: white; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: background 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <i class="fas fa-paper-plane"></i> Confirm Order
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 
 <div class="mobile-nav" id="mobileNav">
@@ -264,8 +324,8 @@
     @endauth
 
     <a href="{{ route('home') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
-    <li><a href="{{ route('about') }}" class="nav-link"><i class="fas fa-info-circle"></i> About</a></li>
-    <li><a href="{{ route('contact') }}" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
+    <a href="{{ route('about') }}" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+    <a href="{{ route('contact') }}" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
     @guest
         <a href="{{ route('register') }}" class="nav-link"><i class="fas fa-sign-in-alt"></i> Register</a>
         <a href="{{ route('login') }}" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
@@ -293,15 +353,15 @@
 
     window.addEventListener('scroll', () => {
         const header = document.getElementById('mainHeader');
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
+        if (header) {
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
         }
     });
 
-    const cartTrigger = document.getElementById('cartTrigger');
+    let cart = [];
     const cartModal = document.getElementById('cartModal');
+    const cartTrigger = document.getElementById('cartTrigger');
     const closeCart = document.getElementById('closeCart');
 
     if(cartTrigger) {
@@ -316,59 +376,75 @@
         });
     }
 
-    let cartData = [];
-
-    function addToCart(name, price) {
-        cartData.push({ name, price });
-        updateCartDisplay();
+    function addToCart(name, price, restaurantId) {
+        cart.push({
+            name: name,
+            price: parseFloat(price),
+            restaurant_id: restaurantId
+        });
+        
+        cartModal.classList.add('active');
+        renderCartItems();
     }
 
     function removeFromCart(index) {
-        cartData.splice(index, 1);
-        updateCartDisplay();
+        cart.splice(index, 1);
+        renderCartItems();
     }
 
-    function updateCartDisplay() {
-        const container = document.getElementById('cartItems');
-        const count = document.getElementById('cart-count');
-        const total = document.getElementById('cartTotal');
+    function renderCartItems() {
+        const listContainer = document.getElementById('cartItemsList');
+        const totalText = document.getElementById('cartDisplayTotal');
+        const totalInput = document.getElementById('hiddenCartTotal');
+        const countSpan = document.getElementById('cart-count');
         
-        if(!container || !count || !total) return;
-        count.innerText = cartData.length;
-        
-        if(cartData.length === 0) {
-            container.innerHTML = '<p style="text-align:center; margin-top:50px; color:#999;">Your cart is currently empty.</p>';
-            total.innerText = '0 FCFA';
+        countSpan.innerText = cart.length;
+
+        if (cart.length === 0) {
+            listContainer.innerHTML = '<p id="emptyCartMsg" style="text-align:center; margin-top:50px; color:#999;">Your cart is currently empty.</p>';
+            totalText.innerText = "0 FCFA";
+            totalInput.value = 0;
             return;
         }
+
+        let html = '';
+        let total = 0;
         
-        let totalVal = 0;
-        container.innerHTML = cartData.map((item, index) => {
-            totalVal += item.price;
-            return `
-                <div style="padding:15px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+        // Grab restaurant_id from the first item
+        const resId = cart[0].restaurant_id;
+
+        cart.forEach((item, index) => {
+            total += item.price;
+            html += `
+                <div class="item-row" style="display:flex; justify-content:space-between; padding: 15px; border-bottom: 1px solid #eee; background:#fff; margin-bottom:10px; border-radius:8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
                     <div>
-                        <span style="display:block; font-weight:600; color:#0a192f;">${item.name}</span>
-                        <small style="color:#FF69B4;">${item.price.toLocaleString()} FCFA</small>
+                        <strong style="display:block; color:#0a192f;">${item.name}</strong>
+                        <small style="color:#C5A059; font-weight:bold;">${item.price.toLocaleString()} FCFA</small>
+                        
+                        <input type="hidden" name="food_names[]" value="${item.name}">
+                        <input type="hidden" name="prices[]" value="${item.price}">
+                        <input type="hidden" name="quantities[]" value="1">
                     </div>
-                    <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#dc2626; cursor:pointer; padding:5px;">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </div>`;
-        }).join('');
-        
-        total.innerText = totalVal.toLocaleString() + ' FCFA';
+                    <button type="button" onclick="removeFromCart(${index})" style="background:none; border:none; color:#dc2626; cursor:pointer; font-size:1.2rem;">&times;</button>
+                </div>
+            `;
+        });
+
+        // Crucial: Single restaurant_id input for the whole order
+        html += `<input type="hidden" name="restaurant_id" value="${resId}">`;
+
+        listContainer.innerHTML = html;
+        totalText.innerText = total.toLocaleString() + " FCFA";
+        totalInput.value = total;
     }
 
-    const checkoutBtn = document.querySelector('.checkout-btn');
-    if(checkoutBtn) {
-        checkoutBtn.addEventListener('click', function() {
-            if (cartData.length === 0) {
-                alert("Your cart is empty! Please add some food first.");
-                return;
+    const checkoutForm = document.getElementById('checkoutForm');
+    if(checkoutForm) {
+        checkoutForm.addEventListener('submit', function(e) {
+            if (cart.length === 0) {
+                e.preventDefault();
+                alert("Please add items to your cart first.");
             }
-            localStorage.setItem('foodieCart', JSON.stringify(cartData));
-            window.location.href = "{{ route('proceed.page') }}";
         });
     }
 </script>

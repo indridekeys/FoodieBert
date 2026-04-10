@@ -21,6 +21,7 @@ use App\Http\Controllers\Owner\OwnerController;
 use App\Http\Controllers\Owner\MenuController;
 use App\Http\Controllers\Owner\GalleryController;
 use App\Http\Controllers\Owner\StaffController;
+use App\Http\Controllers\RestaurantRegistrationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -106,7 +107,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
         Route::patch('/profile/update', [AdminController::class, 'updateProfile'])->name('profile.update');
         Route::get('/users/{id}/pdf', [AdminController::class, 'downloadUserPdf'])->name('users.pdf');
-        // ... (remaining admin routes preserved)
+        
         Route::get('/payouts', [AdminController::class, 'withdrawals'])->name('payouts');
         Route::post('/payouts/{id}/approve', [AdminController::class, 'approveWithdrawal'])->name('payouts.approve');
         Route::get('/messages/count', [AdminController::class, 'getMessageCount'])->name('messages.count');
@@ -121,6 +122,11 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/restaurants/{id}', [AdminController::class, 'destroyRestaurant'])->name('restaurants.destroy');
         Route::get('/table-bookings', [BookingController::class, 'adminIndex'])->name('bookings.index');
         Route::patch('/table-bookings/{id}/status', [BookingController::class, 'updateStatus'])->name('bookings.update-status');
+
+        // --- UPDATED RESTAURANT APPLICATION ROUTES ---
+        Route::get('/applications', [RestaurantRegistrationController::class, 'index'])->name('applications.index');
+        Route::post('/restaurants/approve/{id}', [RestaurantRegistrationController::class, 'approve'])->name('restaurants.approve');
+        Route::delete('/restaurants/reject/{id}', [RestaurantRegistrationController::class, 'reject'])->name('restaurants.reject');
     });
 
     /* --- 2. LOGISTICS AGENT SECTION --- */
@@ -136,17 +142,11 @@ Route::middleware(['auth'])->group(function () {
             return view('agent.dashboard', array_merge($data, ['orders' => $orders]));
         })->name('dashboard');
 
-        // Combined Logistics Status & Order Actions
         Route::get('/earnings', [OrderController::class, 'earnings'])->name('earnings');
         Route::post('/withdraw', [OrderController::class, 'withdraw'])->name('withdraw');
-        
-        // This matches your dashboard toggle (via route name)
         Route::post('/toggle-availability', [OrderController::class, 'toggleAvailability'])->name('toggle_availability');
-        
-        // Added routes for Accept and Complete actions found in your Blade
         Route::post('/orders/{id}/accept', [OrderController::class, 'acceptOrder'])->name('orders.accept');
         Route::post('/orders/{id}/complete', [OrderController::class, 'completeOrder'])->name('orders.complete');
-        
         Route::post('/toggle-status', [OrderController::class, 'toggleAvailability'])->name('toggle-status');
     });
 
@@ -163,6 +163,11 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/gallery/{gallery}', [GalleryController::class, 'destroy'])->name('gallery.destroy');
         Route::post('/restaurants/{restaurant}/staff', [StaffController::class, 'store'])->name('staff.store');
         Route::delete('/staff/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
+        Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.store');
+        Route::post('/owner/orders/{id}/accept', [OwnerController::class, 'acceptOrder'])->name('owner.orders.accept');
+        Route::post('/owner/orders/{id}/reject', [OwnerController::class, 'rejectOrder'])->name('owner.orders.reject');
+        Route::post('/owner/orders/{id}/assign-agent', [OwnerController::class, 'assignAgent'])->name('owner.orders.assignAgent');
+        Route::delete('/owner/menus/{id}', [OwnerController::class, 'destroyMenu'])->name('owner.menus.destroy');
     });
 
     /* --- 4. CUSTOMER SPECIFIC SECTION --- */
@@ -188,5 +193,14 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 Route::post('/orders/add', [OrderController::class, 'store'])->name('orders.add')->middleware('auth');
 
 Route::get('/checkout', function() { return view('checkout'); })->name('proceed.page');
-Route::get('/reserve', [ReservationController::class, 'index'])->name('reservations.index');
+
+// --- UPDATED: Using BookingController instead of ReservationController ---
+Route::get('/reserve', [BookingController::class, 'index'])->name('bookings.index');
+
 Route::get('/restaurants/{identifier}', [RestaurantController::class, 'showMenu'])->name('restaurants.show');
+
+/* --- RESTAURANT REGISTRATION (GUEST/AUTH) --- */
+Route::get('/register/restaurant', [RestaurantRegistrationController::class, 'create'])->name('register.restaurant');
+Route::post('/register/restaurant/submit', [RestaurantRegistrationController::class, 'store'])->name('register.restaurant.store');
+
+Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');

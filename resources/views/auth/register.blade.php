@@ -81,10 +81,14 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone" placeholder="e.g. 683067844" value="{{ old('phone') }}" required>
+                </div>
+
+                <div class="form-group">
                     <label>Designated Role</label>
                     <select name="role" required>
                         <option value="customer">Customer (Diner)</option>
-                        <option value="agent">Delivery Agent</option>
                         <option value="owner">Restaurant Owner</option>
                     </select>
                 </div>

@@ -12,6 +12,7 @@
             --emerald: #0a192f;
             --gold: #D4AF37;
             --soft-gold: rgba(212, 175, 55, 0.2);
+            --light-red: #e74c3c;
         }
 
         .modal-overlay { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
@@ -52,9 +53,12 @@
         /* Status Badges */
         .badge { padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
         .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-preparing { background: #d1ecf1; color: #0c5460; }
+        .badge-delivering { background: #cfe2ff; color: #084298; }
         .badge-confirmed { background: #d4edda; color: #155724; }
         .badge-completed { background: #e0f2fe; color: #075985; }
         .badge-cancelled { background: #f8d7da; color: #721c24; }
+        .badge-rejected { background: #f8d7da; color: #721c24; }
 
         .btn-review { background: var(--emerald); color: var(--gold); border: 1px solid var(--gold); padding: 8px 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: 600; }
         .btn-review:hover { background: var(--gold); color: var(--emerald); }
@@ -100,7 +104,8 @@
         <a href="{{ route('customer.dashboard') }}" class="nav-item active"><i class="fas fa-heart"></i> My Dashboard</a>
         <a href="{{ route('restaurants.index') }}" class="nav-item"><i class="fas fa-search"></i> Discover Eateries</a>
         <a href="#active-bookings" class="nav-item"><i class="fas fa-calendar-alt"></i> My Reservations</a>
-        <a href="#order-history" class="nav-item"><i class="fas fa-history"></i> Order History</a>
+        <a href="#active-orders" class="nav-item"><i class="fas fa-motorcycle"></i> My Orders</a>
+        <a href="#order-history" class="nav-item"><i class="fas fa-history"></i> History</a>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit" class="nav-item" style="width:100%; background:none; border:none; text-align:left; cursor:pointer; color: #fff;"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -112,7 +117,7 @@
     <nav class="breadcrumb-nav">
         <a href="{{ url('/') }}" class="breadcrumb-item"><i class="fas fa-home"></i> Home</a>
         <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current">Owner Dashboard</span>
+        <span class="breadcrumb-current">Customer Dashboard</span>
     </nav>
     <div class="top-bar">
         <div class="welcome-text">
@@ -158,6 +163,51 @@
         <div class="metric-card"><small>Total Visits</small><h3>{{ $totalVisits }}</h3></div>
         <div class="metric-card"><small>Active Reservations</small><h3>{{ $activeBookings->where('status', 'confirmed')->count() }}</h3></div>
         <div class="metric-card"><small>Fav. Restaurant</small><h3 style="font-size: 1.2rem; color: var(--emerald);">{{ $favRestaurant ?? 'Explore Now' }}</h3></div>
+    </div>
+
+    <div id="active-orders" class="section-header" style="margin-top: 40px;">
+        <h4 style="font-family: 'Playfair Display'; color: var(--emerald);">
+            <i class="fas fa-motorcycle" style="color: #e74c3c;"></i> Track Your Meals
+        </h4>
+    </div>
+    <div class="data-container">
+        <table>
+            <thead>
+                <tr style="background: var(--emerald); color: var(--gold);">
+                    <th>Order Info</th>
+                    <th>Destination</th>
+                    <th>Cost</th>
+                    <th>Status</th>
+                    <th>Tracker</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($orders as $order)
+                <tr>
+                    <td>
+                        <strong>{{ $order->food_name }}</strong><br>
+                        <small style="color:#666;">From {{ $order->restaurant->name }}</small>
+                    </td>
+                    <td><small>{{ $order->delivery_address }}</small></td>
+                    <td>{{ number_format($order->total_price) }} FCFA</td>
+                    <td><span class="badge badge-{{ $order->status }}">{{ $order->status }}</span></td>
+                    <td>
+                        @if($order->status == 'pending')
+                            <i class="fas fa-clock" title="Awaiting restaurant"></i>
+                        @elseif($order->status == 'preparing')
+                            <i class="fas fa-fire-alt" style="color: orange;" title="Chef is cooking"></i>
+                        @elseif($order->status == 'delivering')
+                            <i class="fas fa-shipping-fast" style="color: #007bff;" title="On the way!"></i>
+                        @else
+                            <i class="fas fa-check-double" style="color: green;"></i>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="5" style="text-align:center; padding:30px;">No active food orders. <a href="{{ route('restaurants.index') }}" style="color: var(--gold);">Order a meal now!</a></td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 
     <div id="active-bookings" class="section-header" style="margin-top: 40px;">
@@ -248,7 +298,6 @@
         modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'flex' : 'none';
     }
 
-    // Example function if you decide to add a Review Modal later
     function openReviewModal(bookingId, name) {
         alert("Preparing review form for " + name + ". (You can create another modal for this!)");
     }

@@ -71,7 +71,9 @@
 <div id="modal-menu-management" class="modal-full-page">
     <div style="max-width: 1200px; margin: 0 auto;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #D4AF37; padding-bottom: 15px;">
-            <h2 style="font-family: 'Playfair Display'; color: #001f3f; font-size: 2.5rem;"><i class="fas fa-utensils" style="color: #D4AF37;"></i> Menu Management</h2>
+            <h2 style="font-family: 'Playfair Display'; color: #001f3f; font-size: 2.5rem;">
+                <i class="fas fa-utensils" style="color: #D4AF37;"></i> Menu Management
+            </h2>
             <div class="search-container">
                 <i class="fas fa-search"></i>
                 <input type="text" id="menuSearch" onkeyup="filterTable('menuSearch', 'menuTable')" placeholder="Search menu items...">
@@ -81,7 +83,7 @@
 
         {{-- Error Handling for Form --}}
         @if ($errors->any())
-            <div class="alert-error">
+            <div style="background: #fee2e2; border-left: 4px solid #ef4444; color: #b91c1c; padding: 15px; margin-bottom: 20px; border-radius: 6px;">
                 <ul style="margin:0;">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -92,23 +94,51 @@
 
         <form action="{{ route('owner.menu.store') }}" method="POST" enctype="multipart/form-data" style="background: #f9f9f9; padding: 30px; border-radius: 12px; margin-bottom: 40px; border: 1px solid #ddd;">
             @csrf
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px;">
-                <input type="text" name="name" placeholder="Dish Name" value="{{ old('name') }}" required style="padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
-                <input type="number" name="price" placeholder="Price (CFA)" value="{{ old('price') }}" required style="padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
-                <select name="restaurant_id" required style="padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
-                    <option value="" disabled selected>Select Restaurant</option>
-                    @foreach($restaurants as $res)
-                        <option value="{{ $res->id }}" {{ old('restaurant_id') == $res->id ? 'selected' : '' }}>{{ $res->name }}</option>
-                    @endforeach
-                </select>
-                <input type="file" name="image" accept="image/*" style="padding: 8px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                {{-- Dish Name --}}
+                <div class="form-group">
+                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Dish Name</label>
+                    <input type="text" name="name" placeholder="e.g. Ndolé with Meat" value="{{ old('name') }}" required style="width:100%; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                </div>
+
+                {{-- Price --}}
+                <div class="form-group">
+                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Price (CFA)</label>
+                    <input type="number" name="price" placeholder="5000" value="{{ old('price') }}" required style="width:100%; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                </div>
+
+                {{-- Restaurant Selection --}}
+                <div class="form-group">
+                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Assign Restaurant</label>
+                    <select name="restaurant_id" required style="width:100%; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                        <option value="" disabled selected>Select Restaurant</option>
+                        @foreach($restaurants as $res)
+                            <option value="{{ $res->id }}" {{ old('restaurant_id') == $res->id ? 'selected' : '' }}>{{ $res->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-            <button type="submit" style="margin-top: 20px; width: 100%; background: #001f3f; color: #D4AF37; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
-                <i class="fas fa-plus-circle"></i> ADD NEW DISH
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+                {{-- Ingredients/Description (Crucial for the Public Page) --}}
+                <div class="form-group">
+                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Ingredients / Description</label>
+                    <input type="text" name="ingredients" placeholder="e.g. Bitter leaves, peanuts, spices, served with plantains" value="{{ old('ingredients') }}" style="width:100%; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                </div>
+
+                {{-- Image Upload --}}
+                <div class="form-group">
+                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Dish Image</label>
+                    <input type="file" name="image" accept="image/*" style="width:100%; padding: 8px; background: white; border-radius: 6px; border: 1px solid #ddd;">
+                </div>
+            </div>
+
+            <button type="submit" style="margin-top: 25px; width: 100%; background: #001f3f; color: #D4AF37; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1.1rem;">
+                <i class="fas fa-plus-circle"></i> ADD DISH TO COLLECTION
             </button>
         </form>
 
-        <div class="data-container">
+        <div class="data-container" style="background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden;">
             <table id="menuTable" style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="background: #001f3f; color: #D4AF37; text-align: left;">
@@ -121,20 +151,46 @@
                 </thead>
                 <tbody>
                     @forelse($menuItems as $item)
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 15px;"><img src="{{ $item->image ? asset($item->image) : asset('uploads/default-dish.jpg') }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;"></td>
-                        <td style="padding: 15px;"><strong>{{ $item->name }}</strong></td>
-                        <td>{{ $item->restaurant->name }}</td>
-                        <td>{{ number_format($item->price) }} CFA</td>
+                    <tr style="border-bottom: 1px solid #eee; transition: 0.2s; hover: background: #fdfdfd;">
+                        {{-- Image Column with fallback logic --}}
+                        <td style="padding: 15px;">
+                            @if($item->image)
+                                <img src="{{ asset('storage/' . $item->image) }}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px; border: 1px solid #eee;">
+                            @else
+                                <div style="width: 70px; height: 70px; background: #f3f4f6; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 0.7rem; text-align: center; border: 1px dashed #ccc;">
+                                    No Image
+                                </div>
+                            @endif
+                        </td>
+                        
+                        {{-- Name and Ingredients --}}
+                        <td style="padding: 15px;">
+                            <strong style="font-size: 1.1rem; color: #001f3f; display: block;">{{ $item->name }}</strong>
+                            <small style="color: #666; font-style: italic;">{{ $item->ingredients ?? 'No ingredients listed' }}</small>
+                        </td>
+
+                        <td style="padding: 15px; color: #666;">{{ $item->restaurant->name }}</td>
+                        
+                        <td style="padding: 15px; font-weight: bold; color: #001f3f;">
+                            {{ number_format($item->price) }} <span style="font-size: 0.8rem;">CFA</span>
+                        </td>
+
                         <td style="text-align: right; padding: 15px;">
                             <form action="{{ route('owner.menus.destroy', $item->id) }}" method="POST" style="display:inline;">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn-delete" onclick="return confirm('Permanently delete {{ $item->name }}?')"><i class="fas fa-trash"></i></button>
+                                <button type="submit" style="background: #fee2e2; color: #ef4444; border: none; width: 40px; height: 40px; border-radius: 8px; cursor: pointer; transition: 0.3s;" onclick="return confirm('Permanently delete {{ $item->name }}?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </form>
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="5" style="text-align:center; padding:20px;">No dishes found.</td></tr>
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding:40px; color: #999;">
+                            <i class="fas fa-box-open" style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+                            Your menu is currently empty.
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -164,49 +220,86 @@
         </div>
 
         <div style="background: #f9f9f9; padding: 30px; border-radius: 12px; margin-bottom: 40px; border: 1px solid #ddd;">
-            <h4 style="margin-bottom: 15px; color: #001f3f;">Add New Visuals</h4>
-            <form id="galleryForm" action="#" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: end;">
-                    <div>
-                        <label style="display:block; margin-bottom:10px; font-size:0.8rem; font-weight:bold;">Select Restaurant</label>
-                        <select name="restaurant_id" id="gallery_res_id" required style="width:100%; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
-                            @foreach($restaurants as $res)
-                                <option value="{{ $res->id }}">{{ $res->name }}</option>
-                            @endforeach
-                        </select>
+            <h4 style="margin-bottom: 15px; color: #001f3f; font-family: 'Playfair Display';">Add New Visuals</h4>
+            
+            @if($restaurants->count() > 0)
+                <form id="galleryForm" action="{{ route('owner.gallery.store', $restaurants->first()->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 15px; align-items: end;">
+                        <div>
+                            <label style="display:block; margin-bottom:10px; font-size:0.8rem; font-weight:bold;">Item Name</label>
+                            <input type="text" name="name" placeholder="e.g. Signature Steak" required style="width:100%; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                        </div>
+
+                        <div>
+                            <label style="display:block; margin-bottom:10px; font-size:0.8rem; font-weight:bold;">Price ($)</label>
+                            <input type="number" name="price" step="0.01" placeholder="0.00" required style="width:100%; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                        </div>
+
+                        <div>
+                            <label style="display:block; margin-bottom:10px; font-size:0.8rem; font-weight:bold;">Select Restaurant</label>
+                            <select name="restaurant_id" id="gallery_res_id" required onchange="updateGalleryFormAction(this.value)" style="width:100%; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                                @foreach($restaurants as $res)
+                                    <option value="{{ $res->id }}">{{ $res->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label style="display:block; margin-bottom:10px; font-size:0.8rem; font-weight:bold;">Upload Photo</label>
+                            <input type="file" name="images[]" multiple accept="image/*" required style="padding: 8px; width:100%;">
+                        </div>
                     </div>
-                    <div>
-                        <label style="display:block; margin-bottom:10px; font-size:0.8rem; font-weight:bold;">Upload Photos</label>
-                        <input type="file" name="images[]" multiple accept="image/*" required style="padding: 8px;">
-                    </div>
-                </div>
-                <button type="submit" onclick="updateGalleryAction()" style="margin-top: 20px; width: 100%; background: #001f3f; color: #D4AF37; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
-                    <i class="fas fa-cloud-upload-alt"></i> UPLOAD TO GALLERY
-                </button>
-            </form>
+
+                    <button type="submit" style="margin-top: 20px; width: 100%; background: #001f3f; color: #D4AF37; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                        <i class="fas fa-cloud-upload-alt"></i> UPLOAD TO GALLERY
+                    </button>
+                </form>
+            @else
+                <p style="color: #888;">Please create a restaurant first.</p>
+            @endif
         </div>
 
-        <div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+        <div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; padding-bottom: 50px;">
             @foreach($restaurants as $res)
                 @if($res->gallery)
                     @foreach($res->gallery as $photo)
-                    <div style="position: relative; border-radius: 12px; overflow: hidden; border: 1px solid #eee; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                        <img src="{{ asset('storage/' . $photo->path) }}" style="width: 100%; height: 200px; object-fit: cover;">
-                        <div style="padding: 10px; display: flex; justify-content: space-between; align-items: center;">
-                            <small style="color: #666;">{{ $res->name }}</small>
-                            <form action="{{ route('owner.gallery.destroy', $photo->id) }}" method="POST">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-delete" style="width: 30px; height: 30px; border-radius: 50%;" onclick="return confirm('Remove image?')">
-                                    <i class="fas fa-trash" style="font-size: 0.8rem;"></i>
-                                </button>
-                            </form>
+                    <div style="position: relative; border-radius: 12px; overflow: hidden; border: 1px solid #eee; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                        <img src="{{ asset('storage/' . $photo->path) }}" style="width: 100%; height: 220px; object-fit: cover; display: block;">
+                        
+                        <div style="padding: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <h5 style="margin: 0; color: #001f3f; font-family: 'Playfair Display'; font-size: 1.1rem; font-weight: bold;">
+                                    {{ $photo->name ?? 'Untitled Item' }}
+                                </h5>
+                                <span style="color: #D4AF37; font-weight: 800;">
+                                    ${{ number_format($photo->price ?? 0, 2) }}
+                                </span>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f0f0f0; padding-top: 10px; margin-top: 5px;">
+                                <small style="color: #999; text-transform: uppercase; font-size: 0.7rem; font-weight: 600;">
+                                    <i class="fas fa-utensils"></i> {{ $res->name }}
+                                </small>
+                                
+                                <form action="{{ route('owner.gallery.destroy', $photo->id) }}" method="POST">
+                                    @csrf 
+                                    @method('DELETE')
+                                    <button type="submit" style="background: #fff0f0; color: #dc3545; border: 1px solid #f8d7da; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;" onclick="return confirm('Remove image?')">
+                                        <i class="fas fa-trash" style="font-size: 0.8rem;"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     @endforeach
                 @endif
             @endforeach
         </div>
+    </div>
+</div>
+
+
     </div>
 </div>
 
@@ -247,7 +340,7 @@
                 $showPlaceholder = empty($photoPath) || !file_exists(public_path($photoPath));
             @endphp
             <img src="{{ $showPlaceholder ? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=001f3f&color=D4AF37' : asset($photoPath) }}" 
-                 class="profile-img" onclick="toggleModal('modal-profile')" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #D4AF37;">
+                  class="profile-img" onclick="toggleModal('modal-profile')" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #D4AF37;">
         </div>
     </div>
 
@@ -388,10 +481,16 @@
         filterTable('globalSearch', 'bookingsTable');
     }
 
-    function updateGalleryAction() {
-        const resId = document.getElementById('gallery_res_id').value;
-        document.getElementById('galleryForm').action = `/owner/restaurants/${resId}/gallery`;
-    }
+  
+/**
+ * Update the Form Action URL dynamically when the restaurant selection changes
+ */
+function updateGalleryFormAction(restaurantId) {
+    const form = document.getElementById('galleryForm');
+    let url = "{{ route('owner.gallery.store', ':id') }}";
+    form.action = url.replace(':id', restaurantId);
+}
+
 </script>
 
 </body>
