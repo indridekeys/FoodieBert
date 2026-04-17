@@ -189,7 +189,6 @@
     .gallery-item:hover img { transform: scale(1.1); }
     .gallery-item:hover .gallery-overlay { opacity: 1; }
 
-    /* --- CART MODAL STYLE --- */
     .cart-modal {
         position: fixed;
         right: -400px;
@@ -321,7 +320,7 @@
                         <div class="item-price">{{ number_format($item->price) }} CFA</div>
                     </div>
                     <p class="item-desc">
-                        {{ $item->description ?? 'Traditional local specialty prepared with the freshest ingredients.' }}
+                        {{ $item->description ?? 'Traditional speciality made with the freshest ingredient' }}
                     </p>
                     <p style="color:var(--accent-gold); font-size:0.7rem; margin-top:auto; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
                         <i class="fas fa-plus-circle"></i> Add to Cart
@@ -401,7 +400,6 @@ function renderCartItems() {
             </div>
         `;
 
-        // These are the actual inputs sent to Laravel
         inputs += `
             <input type="hidden" name="food_names[]" value="${item.name}">
             <input type="hidden" name="prices[]" value="${item.price}">
@@ -425,7 +423,7 @@ document.getElementById('closeCart').onclick = function() {
     document.getElementById('cartModal').classList.remove('active');
 };
 
-// Validation to ensure it doesn't submit empty
+
 document.getElementById('checkoutForm').onsubmit = function(e) {
     if(cart.length === 0) {
         e.preventDefault();

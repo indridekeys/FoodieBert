@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="{{ asset('css/components.css') }}">
 
 <style>
-    /* --- COMPACT SQUARE LOGO BOX --- */
+  
     .header-logo-box {
         display: flex;
         align-items: center;
